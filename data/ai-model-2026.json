@@ -1,0 +1,77 @@
+{
+  "badge": "Projected model, not results",
+  "year": 2026,
+  "basis_note": "Same 1,581 prospects as 2025. Every 2026 figure on this tab is a modeled target, not something that happened.",
+  "close_rate_note": "2026 applications are set so leases never exceed approved applications (applications less rejected) in any month. Approved-to-lease close rate: 99.0% in 2026 vs 97.6% in 2025.",
+  "pro_forma": [
+    {"measure": "Submitted Guest Cards", "total": 556, "months": [32,35,46,47,42,44,46,51,53,57,50,53]},
+    {"measure": "Converted To Visits", "total": 476, "months": [27,30,40,40,36,38,39,44,45,49,42,46]},
+    {"measure": "Walk Ins", "total": 235, "months": [13,15,20,20,18,18,19,22,22,24,21,23]},
+    {"measure": "Submitted Applications", "total": 320, "months": [16,18,24,24,22,24,26,30,31,36,36,33]},
+    {"measure": "Rejected Applications", "total": 27, "months": [2,2,2,2,2,2,2,3,3,3,2,2]},
+    {"measure": "Converted To Leases", "total": 290, "months": [14,16,22,22,20,22,24,27,28,32,33,30]},
+    {"measure": "Follow Up Calls", "total": 2373, "months": [135,150,198,201,180,188,195,218,225,243,212,228]},
+    {"measure": "Follow Up Emails", "total": 2529, "months": [144,160,211,214,192,200,208,232,240,259,226,243]},
+    {"measure": "Follow Up Texts", "total": 3954, "months": [225,250,330,335,300,313,325,363,375,405,353,380]},
+    {"measure": "New Calls", "total": 476, "months": [27,30,40,40,36,38,39,44,45,49,42,46]},
+    {"measure": "New Emails", "total": 189, "months": [11,12,16,16,14,15,16,17,18,19,17,18]},
+    {"measure": "New Texts", "total": 125, "months": [7,8,10,11,10,10,10,11,12,13,11,12]},
+    {"measure": "Return Visits", "total": 72, "months": [4,5,6,6,5,6,6,7,7,7,6,7]}
+  ],
+  "scorecard": [
+    {"id": "guest_capture", "label": "Guest card capture", "detail": "guest cards / prospects", "format": "percent", "target": 0.352, "direction": "higher"},
+    {"id": "calls_per_prospect", "label": "Follow-up calls per prospect", "detail": "follow-up calls / prospects", "format": "ratio", "target": 1.5, "direction": "higher"},
+    {"id": "visit_to_app", "label": "Visit-to-application", "detail": "applications / (visits + walk-ins)", "format": "percent", "target": 0.45, "direction": "higher"},
+    {"id": "lead_to_lease", "label": "Lead-to-lease", "detail": "leases / prospects", "format": "percent", "target": 0.183, "direction": "higher"},
+    {"id": "rejection", "label": "Application rejection rate", "detail": "rejected / applications, lower is better", "format": "percent", "target": 0.084, "direction": "lower"},
+    {"id": "close_rate", "label": "Approved-to-lease close rate", "detail": "leases / (applications - rejected)", "format": "percent", "target": 0.99, "direction": "higher"}
+  ],
+  "assumptions": {
+    "note": "Assumptions from an industry benchmark model. Not measured at this property.",
+    "drivers": [
+      {"id": "ltl", "label": "Loss-to-lease compression", "group": "revenue", "base": 209830, "lever": 0.25},
+      {"id": "vacancy", "label": "Vacancy loss reduction", "group": "revenue", "base": 160230, "lever": 0.30},
+      {"id": "concessions", "label": "Discretionary concessions cut", "group": "revenue", "base": 123639, "lever": 0.45},
+      {"id": "appfee", "label": "Application fee volume", "group": "revenue", "base": 13719, "lever": "application_lift"},
+      {"id": "baddebt", "label": "Move-out bad debt reduction", "group": "revenue", "base": 17476, "lever": 0.30},
+      {"id": "ads", "label": "Internet ad savings", "group": "cost", "base": 42825, "lever": 0.15},
+      {"id": "locator", "label": "Locator fee savings", "group": "cost", "base": 4040, "lever": 0.50},
+      {"id": "turn", "label": "Unit turn vendor savings", "group": "cost", "base": 71584, "lever": 0.15},
+      {"id": "answering", "label": "Answering service replaced", "group": "cost", "base": 1045, "lever": 1.0}
+    ],
+    "management_fee": 0.04,
+    "ai_cost_per_unit_month": 3.75,
+    "cap_rate": 0.0575
+  },
+  "automation": {
+    "built_label": "Built and tested in n8n with test data, not live",
+    "next_label": "Next phase (designed, not built)",
+    "built": [
+      {"id": "WF-1", "title": "Lead capture to guest card", "image": null, "points": [
+        "A webhook takes leads from Zillow, Apartments.com, the website, email or SMS.",
+        "Each lead becomes one guest card. Repeat contacts update the same card.",
+        "A first reply, the same for everyone, is drafted in seconds.",
+        "Accommodation, screening and policy questions go to staff with no automated reply.",
+        "Seconds-to-reply is logged against a 2-minute target.",
+        "Nothing is sent."]},
+      {"id": "WF-5", "title": "Box Score roll-up", "image": null, "points": [
+        "Runs daily and rolls guest cards into one row per month.",
+        "Each row holds sources, median reply seconds, share replied within 2 minutes and staff-routed count.",
+        "It also holds tours, visits, applications, leases, visit-to-application and lead-to-lease."]}
+    ],
+    "next": [
+      {"id": "WF-2", "title": "Voice AI for missed and after-hours calls", "points": ["Answers calls the team misses and books live tours."]},
+      {"id": "WF-3", "title": "Post-tour follow-up", "points": ["Follows up 2 and 24 hours after a tour when there is no application."]},
+      {"id": "WF-4", "title": "Call and tour QA scoring", "points": ["Scores calls and tours and sends staff a weekly scorecard."]}
+    ],
+    "stack_label": "Planned production stack; nothing is connected on this page.",
+    "stack": [
+      ["Claude API", "Drafting and scoring"],
+      ["n8n", "Orchestration"],
+      ["Retell AI and Twilio", "Voice and SMS"],
+      ["Cal.com", "Tour booking"],
+      ["Supabase", "Guest cards and Box Score"],
+      ["Deepgram", "Transcription"]
+    ]
+  }
+}

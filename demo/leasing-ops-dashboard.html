@@ -187,7 +187,7 @@ footer.method{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px
 footer .steps{font:500 11.5px/1.6 var(--mono);letter-spacing:.2em;text-transform:uppercase}
 footer .steps .g{color:var(--orange)}footer .steps .a{color:var(--peri)}footer .steps .d{color:var(--blue-text)}
 
-@media(max-width:900px){.grid,.two-col,.lab-grid{grid-template-columns:1fr}.headline-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.grid,.two-col,.lab-grid{grid-template-columns:1fr}.headline-grid,.big-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){
   main{padding:0 16px 28px}
   .motto{display:none}
@@ -205,13 +205,27 @@ footer .steps .g{color:var(--orange)}footer .steps .a{color:var(--peri)}footer .
   .event-log li>:nth-child(3),.event-log li>:nth-child(4){grid-column:2}
   .bar-line{grid-template-columns:1fr 54px}.bar-line .track{grid-column:1/-1;grid-row:2}
 }
+.tile.wide{grid-column:span 2}
+.model-banner{border-left:3px solid var(--ink)}
+.m25{color:#9fd8ff}.y26{color:var(--ink)}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:12px}
+.card{border:1px solid var(--line-strong);border-radius:12px;padding:16px;background:var(--raised);min-width:0}
+.card.next{border-style:dashed;background:transparent}
+.card .tag{margin:10px 0 4px}
+.shot-slot{margin:14px 0 0;border:1px dashed var(--line-strong);border-radius:10px;min-height:110px;display:grid;place-items:center;padding:12px;color:var(--dim);font-size:13px;text-align:center}
+.shot{display:block;width:100%;height:auto;margin-top:14px;border:1px solid var(--line);border-radius:10px}
+.score{font-weight:650}.score.largest-gap{color:var(--bad)}.score.gap{color:var(--orange)}.score.on-target{color:var(--good)}
+.bridge-table input{width:112px;padding:6px 8px;background:var(--raised);color:var(--ink);border:1px solid var(--line-strong);border-radius:7px;text-align:right}
+.bridge-table tr.group th{font-size:12.5px;color:var(--soft);background:#13171c;text-align:left}
+.bridge-table td:nth-child(2){white-space:normal}
+.big-tiles{grid-template-columns:repeat(5,minmax(0,1fr))}
 .build-badge{position:sticky;top:0;z-index:50;padding:7px 16px;text-align:center;background:#0d0e10;border-bottom:1px solid rgba(255,138,66,.5);color:#ffc6a3;font-size:12.5px;line-height:1.4;letter-spacing:.02em}
 .draft-edit{width:100%;min-height:150px;box-sizing:border-box;padding:12px;border:1px solid #ff8a42;border-radius:10px;background:#0d0e10;color:#f5f5f2;font:inherit;line-height:1.5}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
-<div class="build-badge" role="note">Real-work build · a real property's 2025 leasing records, name removed · Follow-up lab simulated</div>
+<div class="build-badge" id="build-badge" role="note">Real-work build · a real property's 2025 leasing records, name removed · Follow-up lab simulated</div>
 <main>
 <header class="mast">
   <div class="logo" aria-label="AI Ops Expert"><i></i><b>AI Ops</b><span>EXPERT</span></div>
@@ -232,6 +246,7 @@ footer .steps .g{color:var(--orange)}footer .steps .a{color:var(--peri)}footer .
 <nav class="nav" aria-label="Dashboard workspace">
   <button type="button" data-view="overview" aria-controls="overview" aria-selected="true" role="tab">Property overview</button>
   <button type="button" data-view="boxscore" aria-controls="boxscore" aria-selected="false" role="tab">Leasing box score</button>
+  <button type="button" data-view="impact" aria-controls="impact" aria-selected="false" role="tab">Projected AI impact</button>
   <button type="button" data-view="followup" aria-controls="followup" aria-selected="false" role="tab">Follow-up lab</button>
   <button type="button" data-view="how" aria-controls="how" aria-selected="false" role="tab">How it works</button>
 </nav>
@@ -239,6 +254,7 @@ footer .steps .g{color:var(--orange)}footer .steps .a{color:var(--peri)}footer .
 <div class="legend" aria-label="How figures are labeled">
   <span class="tag hist">Measured (2025 records)</span>from the property's 2025 records
   <span class="tag proj">Scenario projection</span>your assumptions
+  <span class="tag proj">Projected model, not results</span>2026 benchmark model
   <span class="tag sim">Simulated</span>fictional events in this session
 </div>
 
@@ -266,9 +282,10 @@ footer .steps .g{color:var(--orange)}footer .steps .a{color:var(--peri)}footer .
   <details class="panel" id="data-checks"><summary><span>Source and reconciliation <span class="flagged" id="check-count"></span></span></summary>
     <p class="note" id="source"></p>
     <p class="note">Each box-score Total is compared with the sum of its 12 monthly values. Occupancy is shown as recorded and has no total. All twelve months are measured records, January to December.</p>
+    <p class="note">Guest cards, applications and leases come from a separate property-system report pulled in Nov 2026. The other rows come from the 2025 records. All are 2025 measured figures.</p>
     <div class="table-wrap" id="checks-table"></div>
   </details>
-  <details class="panel" id="leasing"><summary>Leasing activity by channel</summary><div class="table-wrap" id="leasing-table"></div><p class="note">Prospect, visit, and application counts are shown as recorded. The records have no individual-level data that links these events.</p></details>
+  <details class="panel" id="leasing"><summary>Leasing activity by channel</summary><div class="table-wrap" id="leasing-table"></div><p class="note">Prospect, guest card, visit, application, and lease counts are shown as recorded. The records have no individual-level data that links these events.</p></details>
 </div>
 
 <!-- Box score -->
@@ -300,6 +317,53 @@ footer .steps .g{color:var(--orange)}footer .steps .a{color:var(--peri)}footer .
     <div class="section-head"><h2>Follow-up lab outcomes</h2><span class="tag sim">Simulated</span></div>
     <p class="note">Run the fictional prospects in the Follow-up lab. These counts update as you record contacts, replies, and leasing milestones, kept apart from the measured figures above.</p>
     <div id="session-box" class="table-wrap" aria-live="polite"></div>
+  </section>
+</div>
+
+<!-- Projected AI impact -->
+<div id="impact" role="tabpanel" hidden>
+  <section class="panel model-banner">
+    <div class="section-head"><h2>Projected AI impact</h2><span class="tag proj" data-model-tag>Projected model, not results</span></div>
+    <p class="note" id="model-basis"></p>
+    <p class="note">The 2025 columns are measured records. Everything labeled 2026 is a model built from benchmark assumptions. It makes no claim about what happened.</p>
+  </section>
+  <section class="panel" aria-labelledby="pf-title">
+    <div class="section-head"><h2 id="pf-title">2025 measured vs 2026 AI pro forma</h2><span class="tag hist">Measured (2025 records)</span><span class="tag proj" data-model-tag>Projected model, not results</span></div>
+    <p class="note">Same 1,581 prospects in both years. Only what happens to them changes in the model.</p>
+    <div class="table-wrap" id="pf-table"></div>
+    <p class="note" id="close-note"></p>
+    <div class="section-head"><h3>Leases by month</h3><span class="legend" style="margin:0"><span class="tag hist">Measured (2025 records)</span><span class="tag proj" data-model-tag>Projected model, not results</span></span></div>
+    <div id="leases-chart"></div>
+    <p class="chart-summary" id="leases-summary"></p>
+    <details><summary class="note">2026 projected model, month by month</summary><div class="table-wrap" id="pf-monthly"></div></details>
+  </section>
+  <section class="panel" aria-labelledby="score-title">
+    <div class="section-head"><h2 id="score-title">Staff scorecard</h2><span class="tag hist">Measured (2025 records)</span><span class="tag proj" data-model-tag>Projected model, not results</span></div>
+    <p class="note">Each 2025 rate is computed from the measured rows above. The target column is a best-in-class benchmark, not a result at this property. A gap over 50% of the target is marked as the largest gap.</p>
+    <div class="table-wrap" id="score-table"></div>
+  </section>
+  <section class="panel" aria-labelledby="bridge-title" id="bridge">
+    <div class="section-head"><h2 id="bridge-title">Assumptions and NOI lift bridge</h2><span class="tag proj" data-model-tag>Projected model, not results</span></div>
+    <p class="note" id="assumption-note"></p>
+    <p class="note">Each driver is its annual base times its lever. Change any input and the bridge recalculates. Dollar lines are rounded to whole dollars; the totals are calculated from unrounded values.</p>
+    <div class="table-wrap"><table class="bridge-table"><thead><tr><th scope="col">Driver</th><th scope="col">Annual base ($)</th><th scope="col">Lever (%)</th><th scope="col">Annual lift</th></tr></thead><tbody id="bridge-body"></tbody></table></div>
+    <div class="headline-grid big-tiles" style="margin-top:16px" aria-live="polite">
+      <article class="tile"><span class="label">Net annual NOI lift</span><strong class="y26" id="out-net"></strong><small>after AI cost</small></article>
+      <article class="tile"><span class="label">Per unit</span><strong class="y26" id="out-unit"></strong><small>per year</small></article>
+      <article class="tile"><span class="label">ROI</span><strong class="y26" id="out-roi"></strong><small>lift / AI cost</small></article>
+      <article class="tile"><span class="label">Payback</span><strong class="y26" id="out-payback"></strong><small>AI cost / monthly gross lift</small></article>
+      <article class="tile"><span class="label">Implied value</span><strong class="y26" id="out-value"></strong><small>at <input id="cap-rate" type="number" min="0.1" step="any" aria-label="Cap rate, percent" style="width:70px"> % cap rate</small></article>
+    </div>
+    <div class="bars" id="bridge-bars" role="group" aria-label="Lift by driver"></div>
+    <div class="toolbar"><button id="bridge-reset" type="button">Reset to defaults</button></div>
+  </section>
+  <section class="panel" aria-labelledby="auto-title">
+    <div class="section-head"><h2 id="auto-title">Automation build</h2><span class="tag sim">Nothing is live</span></div>
+    <p class="note">Two workflows are built and tested in n8n with test data. Three more are designed. None of them is connected to a real property system or sends anything.</p>
+    <div class="card-grid" id="auto-built"></div>
+    <div class="card-grid" id="auto-next"></div>
+    <h3 style="margin-top:20px" id="stack-label"></h3>
+    <div class="table-wrap" id="stack-table"></div>
   </section>
 </div>
 
@@ -390,7 +454,8 @@ footer .steps .g{color:var(--orange)}footer .steps .a{color:var(--peri)}footer .
 
 <footer class="method"><span>Get the operation right. Then automate it.</span><span class="steps"><span class="d">Document</span> → <span class="g">Govern</span> → <span class="a">Automate</span></span></footer>
 </main>
-<script id="workbook" type="application/json">{"property":"324-Unit Multifamily Community","units":324,"year":2025,"file":"leasing-2025-public.xlsx","sheet":"Leasing","occupancy":[0.889,0.941,0.96,0.963,0.963,0.97,0.9855,0.975,0.969,0.982,0.969,0.956],"leasing":[{"name":"New Calls","row":7,"months":[52,37,44,48,26,46,31,40,36,51,41,40],"reported":492},{"name":"Follow Up Calls","row":8,"months":[8,3,4,33,11,20,17,23,36,29,10,34],"reported":228},{"name":"New Emails","row":9,"months":[29,18,26,33,21,18,13,14,27,8,3,19],"reported":229},{"name":"Follow Up Emails","row":10,"months":[21,14,15,35,45,49,53,60,65,80,90,100],"reported":627},{"name":"New Texts","row":11,"months":[2,0,0,6,2,1,3,0,1,1,1,1],"reported":18},{"name":"Follow Up Texts","row":12,"months":[687,509,452,488,250,630,386,336,467,520,764,828],"reported":6317},{"name":"Submitted Guest Cards","row":13,"months":[0,0,0,0,0,0,0,0,0,0,0,0],"reported":0},{"name":"Submitted Applications","row":14,"months":[16,21,19,10,9,14,20,25,14,20,17,10],"reported":195},{"name":"Walk Ins","row":15,"months":[67,27,43,41,36,49,33,42,31,33,18,27],"reported":447},{"name":"Converted To Visits","row":16,"months":[11,7,7,15,25,28,35,40,45,47,40,48],"reported":348},{"name":"Return Visits","row":17,"months":[1,0,0,2,5,17,2,0,7,5,7,2],"reported":48},{"name":"Total Prospects","row":18,"months":[90,100,132,134,120,125,130,145,150,162,141,152],"reported":1581},{"name":"Rejected Applications","row":19,"months":[5,5,4,2,0,0,1,2,0,3,1,0],"reported":23}],"note":"Leasing and occupancy only \u00b7 financials not included"}</script>
+<script id="workbook" type="application/json">{"property":"324-Unit Multifamily Community","units":324,"year":2025,"file":"leasing-2025-public.xlsx","sheet":"Leasing","occupancy":[0.889,0.941,0.96,0.963,0.963,0.97,0.9855,0.975,0.969,0.982,0.969,0.956],"leasing":[{"name":"New Calls","row":7,"months":[52,37,44,48,26,46,31,40,36,51,41,40],"reported":492},{"name":"Follow Up Calls","row":8,"months":[8,3,4,33,11,20,17,23,36,29,10,34],"reported":228},{"name":"New Emails","row":9,"months":[29,18,26,33,21,18,13,14,27,8,3,19],"reported":229},{"name":"Follow Up Emails","row":10,"months":[21,14,15,35,45,49,53,60,65,80,90,100],"reported":627},{"name":"New Texts","row":11,"months":[2,0,0,6,2,1,3,0,1,1,1,1],"reported":18},{"name":"Follow Up Texts","row":12,"months":[687,509,452,488,250,630,386,336,467,520,764,828],"reported":6317},{"name":"Submitted Guest Cards","row":13,"months":[10,15,20,24,25,30,30,32,33,30,38,32],"reported":319},{"name":"Submitted Applications","row":14,"months":[18,17,18,20,18,20,19,22,18,23,19,20],"reported":232},{"name":"Walk Ins","row":15,"months":[67,27,43,41,36,49,33,42,31,33,18,27],"reported":447},{"name":"Converted To Visits","row":16,"months":[11,7,7,15,25,28,35,40,45,47,40,48],"reported":348},{"name":"Return Visits","row":17,"months":[1,0,0,2,5,17,2,0,7,5,7,2],"reported":48},{"name":"Total Prospects","row":18,"months":[90,100,132,134,120,125,130,145,150,162,141,152],"reported":1581},{"name":"Rejected Applications","row":19,"months":[5,5,4,2,0,0,1,2,0,3,1,0],"reported":23},{"name":"Converted To Leases","row":20,"months":[10,11,14,17,18,20,18,20,18,20,18,20],"reported":204}],"note":"Leasing and occupancy only \u00b7 financials not included"}</script>
+<script id="ai-model" type="application/json">{"badge":"Projected model, not results","year":2026,"basis_note":"Same 1,581 prospects as 2025. Every 2026 figure on this tab is a modeled target, not something that happened.","close_rate_note":"2026 applications are set so leases never exceed approved applications (applications less rejected) in any month. Approved-to-lease close rate: 99.0% in 2026 vs 97.6% in 2025.","pro_forma":[{"measure":"Submitted Guest Cards","total":556,"months":[32,35,46,47,42,44,46,51,53,57,50,53]},{"measure":"Converted To Visits","total":476,"months":[27,30,40,40,36,38,39,44,45,49,42,46]},{"measure":"Walk Ins","total":235,"months":[13,15,20,20,18,18,19,22,22,24,21,23]},{"measure":"Submitted Applications","total":320,"months":[16,18,24,24,22,24,26,30,31,36,36,33]},{"measure":"Rejected Applications","total":27,"months":[2,2,2,2,2,2,2,3,3,3,2,2]},{"measure":"Converted To Leases","total":290,"months":[14,16,22,22,20,22,24,27,28,32,33,30]},{"measure":"Follow Up Calls","total":2373,"months":[135,150,198,201,180,188,195,218,225,243,212,228]},{"measure":"Follow Up Emails","total":2529,"months":[144,160,211,214,192,200,208,232,240,259,226,243]},{"measure":"Follow Up Texts","total":3954,"months":[225,250,330,335,300,313,325,363,375,405,353,380]},{"measure":"New Calls","total":476,"months":[27,30,40,40,36,38,39,44,45,49,42,46]},{"measure":"New Emails","total":189,"months":[11,12,16,16,14,15,16,17,18,19,17,18]},{"measure":"New Texts","total":125,"months":[7,8,10,11,10,10,10,11,12,13,11,12]},{"measure":"Return Visits","total":72,"months":[4,5,6,6,5,6,6,7,7,7,6,7]}],"scorecard":[{"id":"guest_capture","label":"Guest card capture","detail":"guest cards / prospects","format":"percent","target":0.352,"direction":"higher"},{"id":"calls_per_prospect","label":"Follow-up calls per prospect","detail":"follow-up calls / prospects","format":"ratio","target":1.5,"direction":"higher"},{"id":"visit_to_app","label":"Visit-to-application","detail":"applications / (visits + walk-ins)","format":"percent","target":0.45,"direction":"higher"},{"id":"lead_to_lease","label":"Lead-to-lease","detail":"leases / prospects","format":"percent","target":0.183,"direction":"higher"},{"id":"rejection","label":"Application rejection rate","detail":"rejected / applications, lower is better","format":"percent","target":0.084,"direction":"lower"},{"id":"close_rate","label":"Approved-to-lease close rate","detail":"leases / (applications - rejected)","format":"percent","target":0.99,"direction":"higher"}],"assumptions":{"note":"Assumptions from an industry benchmark model. Not measured at this property.","drivers":[{"id":"ltl","label":"Loss-to-lease compression","group":"revenue","base":209830,"lever":0.25},{"id":"vacancy","label":"Vacancy loss reduction","group":"revenue","base":160230,"lever":0.3},{"id":"concessions","label":"Discretionary concessions cut","group":"revenue","base":123639,"lever":0.45},{"id":"appfee","label":"Application fee volume","group":"revenue","base":13719,"lever":"application_lift"},{"id":"baddebt","label":"Move-out bad debt reduction","group":"revenue","base":17476,"lever":0.3},{"id":"ads","label":"Internet ad savings","group":"cost","base":42825,"lever":0.15},{"id":"locator","label":"Locator fee savings","group":"cost","base":4040,"lever":0.5},{"id":"turn","label":"Unit turn vendor savings","group":"cost","base":71584,"lever":0.15},{"id":"answering","label":"Answering service replaced","group":"cost","base":1045,"lever":1.0}],"management_fee":0.04,"ai_cost_per_unit_month":3.75,"cap_rate":0.0575},"automation":{"built_label":"Built and tested in n8n with test data, not live","next_label":"Next phase (designed, not built)","built":[{"id":"WF-1","title":"Lead capture to guest card","image":null,"points":["A webhook takes leads from Zillow, Apartments.com, the website, email or SMS.","Each lead becomes one guest card. Repeat contacts update the same card.","A first reply, the same for everyone, is drafted in seconds.","Accommodation, screening and policy questions go to staff with no automated reply.","Seconds-to-reply is logged against a 2-minute target.","Nothing is sent."]},{"id":"WF-5","title":"Box Score roll-up","image":null,"points":["Runs daily and rolls guest cards into one row per month.","Each row holds sources, median reply seconds, share replied within 2 minutes and staff-routed count.","It also holds tours, visits, applications, leases, visit-to-application and lead-to-lease."]}],"next":[{"id":"WF-2","title":"Voice AI for missed and after-hours calls","points":["Answers calls the team misses and books live tours."]},{"id":"WF-3","title":"Post-tour follow-up","points":["Follows up 2 and 24 hours after a tour when there is no application."]},{"id":"WF-4","title":"Call and tour QA scoring","points":["Scores calls and tours and sends staff a weekly scorecard."]}],"stack_label":"Planned production stack; nothing is connected on this page.","stack":[["Claude API","Drafting and scoring"],["n8n","Orchestration"],["Retell AI and Twilio","Voice and SMS"],["Cal.com","Tour booking"],["Supabase","Guest cards and Box Score"],["Deepgram","Transcription"]]}}</script>
 <script>
 'use strict';
 const data = JSON.parse(document.getElementById('workbook').textContent);
@@ -446,18 +511,23 @@ function render() {
   const period = full ? 'FY '+data.year : months[index]+' '+data.year;
   const occupancy = data.occupancy;
   const prospects = leasingRow('Total Prospects'), visits = leasingRow('Converted To Visits'),
-    applications = leasingRow('Submitted Applications');
+    applications = leasingRow('Submitted Applications'), guests = leasingRow('Submitted Guest Cards'),
+    leases = leasingRow('Converted To Leases');
   const leasingVal = item => full ? item.reported : item.months[index];
   const monthly = item => 'monthly '+count.format(item.months[0])+' in Jan, '+count.format(item.months.at(-1))+' in Dec';
   const source = item => full ? 'Full year · '+monthly(item) : data.sheet+' '+cell(index,item.row);
+  const conversion = leasingVal(leases)/leasingVal(prospects);
   const cards = [
     ['Occupancy',pct(full ? occupancy.at(-1) : occupancy[index]),
       full ? 'December rate · January was '+pct(occupancy[0]) : 'Measured for '+period+' · '+data.sheet+' '+cell(index,6)],
     ['Total prospects',count.format(leasingVal(prospects)),source(prospects)],
+    ['Submitted guest cards',count.format(leasingVal(guests)),source(guests)],
     ['Converted to visits',count.format(leasingVal(visits)),source(visits)],
-    ['Submitted applications',count.format(leasingVal(applications)),source(applications)]
+    ['Submitted applications',count.format(leasingVal(applications)),source(applications)],
+    ['Converted to leases',count.format(leasingVal(leases)),source(leases)],
+    ['Lead-to-lease',percent(conversion),count.format(leasingVal(leases))+' of '+count.format(leasingVal(prospects))+' prospects'+(full ? '' : ' · '+period)]
   ];
-  $('headline').innerHTML = cards.map(([label,number,note])=>'<article class="tile"><span class="label">'+label+'</span><strong>'+number+'</strong><small>'+note+'</small></article>').join('');
+  $('headline').innerHTML = cards.map(([label,number,note],i)=>'<article class="tile'+(i===6?' wide':'')+'"><span class="label">'+label+'</span><strong>'+number+'</strong><small>'+note+'</small></article>').join('');
   $('occupancy-chart').innerHTML = chart(occupancy,index,pct,'#00a3ff','Occupancy',.003);
   $('visits-chart').innerHTML = chart(visits.months,index,value=>count.format(value),'#49b9ff','Converted to visits',1);
   $('leasing-table').innerHTML = table(['Activity',period],data.leasing.map(row=>[
@@ -473,16 +543,18 @@ function draft() {
   const index = Number($('period').value);
   const occupancy = data.occupancy;
   const prospects = leasingRow('Total Prospects'), visits = leasingRow('Converted To Visits'),
-    applications = leasingRow('Submitted Applications');
+    applications = leasingRow('Submitted Applications'), guests = leasingRow('Submitted Guest Cards'),
+    leases = leasingRow('Converted To Leases');
   const items = [];
   if (index < 0) {
     const peak = Math.max(...occupancy);
     items.push('Occupancy was '+pct(occupancy[0])+' in January and '+pct(occupancy.at(-1))+' in December. The highest month was '+months[occupancy.indexOf(peak)]+' at '+pct(peak)+'.'+cite('G6:R6'));
-    items.push('The property recorded '+count.format(prospects.reported)+' prospects. '+count.format(visits.reported)+' converted to visits and '+count.format(applications.reported)+' submitted applications.'+cite('S'+prospects.row+' / S'+visits.row+' / S'+applications.row));
+    items.push('The property recorded '+count.format(prospects.reported)+' prospects, '+count.format(guests.reported)+' submitted guest cards, '+count.format(visits.reported)+' conversions to visits, '+count.format(applications.reported)+' submitted applications and '+count.format(leases.reported)+' conversions to leases.'+cite('S'+prospects.row+' / S'+guests.row+' / S'+visits.row+' / S'+applications.row+' / S'+leases.row));
+    items.push('Lead-to-lease was '+percent(leases.reported/prospects.reported)+' ('+count.format(leases.reported)+' of '+count.format(prospects.reported)+' prospects).'+cite('S'+leases.row+' / S'+prospects.row));
     items.push('Monthly visits were '+count.format(visits.months[0])+' in January and '+count.format(visits.months.at(-1))+' in December.'+cite('G'+visits.row+':R'+visits.row));
   } else {
     items.push(months[index]+' occupancy was '+pct(occupancy[index])+'.'+cite(cell(index,6)));
-    items.push(months[index]+' recorded '+count.format(prospects.months[index])+' prospects, '+count.format(visits.months[index])+' visits and '+count.format(applications.months[index])+' applications.'+cite(cell(index,prospects.row)+' / '+cell(index,visits.row)+' / '+cell(index,applications.row)));
+    items.push(months[index]+' recorded '+count.format(prospects.months[index])+' prospects, '+count.format(guests.months[index])+' guest cards, '+count.format(visits.months[index])+' visits, '+count.format(applications.months[index])+' applications and '+count.format(leases.months[index])+' leases.'+cite(cell(index,prospects.row)+' / '+cell(index,guests.row)+' / '+cell(index,visits.row)+' / '+cell(index,applications.row)+' / '+cell(index,leases.row)));
     if (index > 0) items.push('Versus '+months[index-1]+', prospects changed '+signed(prospects.months[index]-prospects.months[index-1])+' and visits changed '+signed(visits.months[index]-visits.months[index-1])+'.'+cite(cell(index-1,prospects.row)+':'+cell(index,prospects.row)+' / '+cell(index-1,visits.row)+':'+cell(index,visits.row)));
   }
   if (checks.length) items.push('Review the <a href="#data-checks" id="reconcile-link">source differences</a> before sharing these figures.');
@@ -497,7 +569,7 @@ function draft() {
 $('property').textContent = data.property;
 $('facts').innerHTML = ['<span>'+escape(data.units)+' units</span>','<span>January to December '+escape(data.year)+'</span>','<span>All 12 months measured</span>'].join('');
 $('data-note').textContent = data.note || 'Imported workbook snapshot';
-$('source').textContent = 'Source: '+data.file+', sheet '+data.sheet+'. Occupancy G6:R6, box score F5:S19. Leasing and occupancy rows only; no financial data is included.';
+$('source').textContent = 'Source: '+data.file+', sheet '+data.sheet+'. Occupancy G6:R6, box score F5:S20. Guest cards, applications and leases come from a separate property-system report pulled in Nov 2026; the other rows come from the 2025 records. Leasing and occupancy rows only; no financial data is included.';
 $('period').innerHTML = '<option value="-1">Full year '+data.year+'</option>'+months.map((month,i)=>'<option value="'+i+'">'+month+' '+data.year+'</option>').join('');
 $('check-count').textContent = checks.length ? checks.length+' differences to review' : 'All '+data.leasing.length+' totals match';
 $('checks-table').innerHTML = checks.length ? table(['Metric','12-month sum','Reported Total','Total minus sum'],checks.map(([name,a,b,left,right])=>
@@ -512,6 +584,8 @@ $('approve').addEventListener('click',()=>{
 });
 render();
 
+const baseBadge = $('build-badge').textContent;
+const impactBadge = 'Projected model, not results · built on a real property\'s 2025 leasing records, name removed';
 const tabs = Array.from(document.querySelectorAll('[data-view]'));
 const periodControl = $('period').closest('label');
 tabs[0].parentElement.setAttribute('role','tablist');
@@ -525,7 +599,8 @@ function showView(tab) {
     button.id = button.dataset.view + '-tab';
     panel.setAttribute('aria-labelledby',button.id);
   }
-  periodControl.hidden = tab.dataset.view === 'followup' || tab.dataset.view === 'how';
+  periodControl.hidden = ['followup','how','impact'].includes(tab.dataset.view);
+  $('build-badge').textContent = tab.dataset.view === 'impact' ? impactBadge : baseBadge;
 }
 tabs.forEach((tab,index)=>{
   tab.addEventListener('click',()=>showView(tab));
@@ -547,7 +622,7 @@ const combine = (label, names) => ({
 });
 const boxRows = [
   combine('Email + text follow-ups',['Follow Up Emails','Follow Up Texts']),
-  ...['Follow Up Emails','Follow Up Texts','Total Prospects','Converted To Visits','Submitted Applications']
+  ...['Follow Up Emails','Follow Up Texts','Total Prospects','Converted To Visits','Submitted Applications','Submitted Guest Cards','Converted To Leases']
     .map(name=>({...leasingRow(name),rows:[leasingRow(name).row]}))
 ];
 $('box-year').textContent = data.year;
@@ -603,6 +678,129 @@ function renderPilot() {
 pilotForm.addEventListener('input',renderPilot);
 pilotForm.addEventListener('submit',event=>event.preventDefault());
 renderPilot();
+
+// ---- Projected AI impact (model inputs come from data/ai-model-2026.json) ----
+const model = JSON.parse($('ai-model').textContent);
+const m25 = name => leasingRow(name).reported;
+const pf = Object.fromEntries(model.pro_forma.map(row => [row.measure, row]));
+const y26 = name => name === 'Total Prospects' ? m25(name) : pf[name].total;
+const dollars = value => (value < 0 ? '-$' : '$') + count.format(Math.abs(Math.round(value)));
+const badgeText = model.badge;
+
+$('model-basis').textContent = model.basis_note;
+document.querySelectorAll('[data-model-tag]').forEach(node => { node.className = 'tag proj'; node.textContent = badgeText; });
+
+// A. Full-year table and monthly leases chart
+const compare = [['Total Prospects','Prospects'],['Submitted Guest Cards','Guest cards'],['Converted To Visits','Converted to visits'],
+  ['Walk Ins','Walk-ins'],['Submitted Applications','Applications'],['Rejected Applications','Rejected applications'],
+  ['Converted To Leases','Leases'],['Follow Up Calls','Follow-up calls'],['Follow Up Emails','Follow-up emails'],['Follow Up Texts','Follow-up texts']];
+$('pf-table').innerHTML = table(['Measure','2025 measured','2026 AI pro forma','Modeled difference'], compare.map(([name,label]) => {
+  const a = m25(name), b = y26(name), diff = b - a;
+  return [escape(label), '<span class="m25">' + count.format(a) + '</span>', '<span class="y26">' + count.format(b) + '</span>',
+    diff === 0 ? 'same' : '<span class="y26">' + signed(diff) + ' (' + (diff > 0 ? '+' : '') + (diff / a * 100).toFixed(0) + '%)</span>'];
+}));
+$('close-note').textContent = model.close_rate_note;
+function dualChart(a, b, label) {
+  const width = 600, height = 175, inset = 13, max = Math.max(...a, ...b) * 1.1;
+  const x = i => (i + .5) * width / 12, y = value => inset + (1 - value / max) * (height - 2 * inset);
+  const line = (values, color, dash) => '<polyline points="' + values.map((v,i) => x(i) + ',' + y(v)).join(' ') + '" fill="none" stroke="' + color +
+    '" stroke-width="2.5" stroke-linejoin="round"' + (dash ? ' stroke-dasharray="7 5"' : '') + ' vector-effect="non-scaling-stroke"/>';
+  const dots = (values, color, name) => values.map((v,i) => '<circle cx="' + x(i) + '" cy="' + y(v) + '" r="3.5" fill="' + color + '"><title>' + name + ' ' + months[i] + ': ' + v + '</title></circle>').join('');
+  return '<div class="chart"><svg viewBox="0 0 600 175" preserveAspectRatio="none" role="img" aria-label="' +
+    escape(label + ' by month. 2025 measured: ' + a.join(', ') + '. 2026 projected model: ' + b.join(', ')) + '">' +
+    [30,90,150].map(l => '<path d="M0 ' + l + 'H600" stroke="#262c34" vector-effect="non-scaling-stroke"/>').join('') +
+    line(a, '#00a3ff', false) + line(b, '#f5f5f2', true) + dots(a, '#00a3ff', '2025 measured') + dots(b, '#f5f5f2', '2026 projected model') +
+    '</svg><div class="axis" aria-hidden="true">' + months.map(m => '<span>' + m + '</span>').join('') + '</div></div>';
+}
+const leases25 = leasingRow('Converted To Leases').months;
+$('leases-chart').innerHTML = dualChart(leases25, pf['Converted To Leases'].months, 'Leases');
+$('leases-summary').textContent = 'Full year: ' + count.format(m25('Converted To Leases')) + ' leases measured in 2025, ' +
+  count.format(pf['Converted To Leases'].total) + ' in the projected 2026 model.';
+$('pf-monthly').innerHTML = table(['2026 projected, by month', ...months, 'Total'], model.pro_forma.map(row =>
+  [escape(row.measure), ...row.months.map(v => '<span class="y26">' + count.format(v) + '</span>'), '<span class="y26">' + count.format(row.total) + '</span>']));
+
+// B. Staff scorecard, computed from the 2025 rows above
+const scoreFormulas = {
+  guest_capture: () => m25('Submitted Guest Cards') / m25('Total Prospects'),
+  calls_per_prospect: () => m25('Follow Up Calls') / m25('Total Prospects'),
+  visit_to_app: () => m25('Submitted Applications') / (m25('Converted To Visits') + m25('Walk Ins')),
+  lead_to_lease: () => m25('Converted To Leases') / m25('Total Prospects'),
+  rejection: () => m25('Rejected Applications') / m25('Submitted Applications'),
+  close_rate: () => m25('Converted To Leases') / (m25('Submitted Applications') - m25('Rejected Applications'))
+};
+const scoreFormat = (item, value) => item.format === 'ratio' ? value.toFixed(2) : percent(value);
+$('score-table').innerHTML = table(['Measure','2025 measured','Best-in-class target','Status'], model.scorecard.map(item => {
+  const actual = scoreFormulas[item.id]();
+  const gap = (item.direction === 'lower' ? actual - item.target : item.target - actual) / item.target;
+  const status = gap <= 0 ? 'On target' : gap > .5 ? 'Largest gap' : 'Gap';
+  return [escape(item.label) + '<small class="sources">' + escape(item.detail) + '</small>', '<span class="m25">' + scoreFormat(item, actual) + '</span>',
+    '<span class="y26">' + scoreFormat(item, item.target) + '</span>', '<b class="score ' + status.toLowerCase().replace(' ', '-') + '">' + status + '</b>'];
+}));
+
+// C. Assumptions and NOI lift bridge
+const assume = model.assumptions;
+const appLift = y26('Submitted Applications') / m25('Submitted Applications') - 1;
+const leverDefault = driver => driver.lever === 'application_lift' ? appLift : driver.lever;
+const numberInput = (id, value, label, step) => '<input id="' + id + '" type="number" min="0" step="' + (step || 'any') + '" aria-label="' + escape(label) + '" value="' + value + '">';
+const driverRow = driver => '<tr><th scope="row">' + escape(driver.label) + '</th><td>' + numberInput('b-' + driver.id + '-base', driver.base, driver.label + ' annual base, dollars') +
+  '</td><td>' + numberInput('b-' + driver.id + '-lever', +(leverDefault(driver) * 100).toFixed(3), driver.label + ' lever, percent') +
+  '</td><td class="y26" id="b-' + driver.id + '-lift"></td></tr>';
+const groupRows = (group, title) => '<tr class="group"><th colspan="4" scope="colgroup">' + title + '</th></tr>' + assume.drivers.filter(d => d.group === group).map(driverRow).join('');
+$('bridge-body').innerHTML = groupRows('revenue', 'Revenue drivers') + groupRows('cost', 'Cost drivers') +
+  '<tr class="group"><th colspan="4" scope="colgroup">Fee and cost of the AI stack</th></tr>' +
+  '<tr><th scope="row">Management fee on revenue lift</th><td>of the five revenue drivers</td><td>' + numberInput('fee-pct', assume.management_fee * 100, 'Management fee, percent') +
+  '</td><td class="y26" id="lift-fee"></td></tr>' +
+  '<tr><th scope="row">AI stack cost</th><td>' + numberInput('ai-rate', assume.ai_cost_per_unit_month, 'AI stack cost, dollars per unit per month') +
+  ' per unit per month</td><td>' + data.units + ' units × 12 months</td><td class="y26" id="lift-ai"></td></tr>';
+const readInput = id => { const value = parseFloat($(id).value); return Number.isFinite(value) && value >= 0 ? value : 0; };
+function renderBridge() {
+  let revenue = 0, cost = 0, largest = 1;
+  const lifts = assume.drivers.map(driver => {
+    const lift = readInput('b-' + driver.id + '-base') * readInput('b-' + driver.id + '-lever') / 100;
+    if (driver.group === 'revenue') revenue += lift; else cost += lift;
+    largest = Math.max(largest, lift);
+    $('b-' + driver.id + '-lift').textContent = dollars(lift);
+    return [driver.label, lift];
+  });
+  const fee = revenue * readInput('fee-pct') / 100, ai = readInput('ai-rate') * data.units * 12, net = revenue + cost - fee - ai;
+  $('lift-fee').textContent = dollars(-fee);
+  $('lift-ai').textContent = dollars(-ai);
+  const cap = readInput('cap-rate') / 100, payback = ai > 0 && net + ai > 0 ? ai / ((net + ai) / 12) : null;
+  const value = cap > 0 ? net / cap : null;
+  $('out-net').textContent = dollars(Math.trunc(net));
+  $('out-unit').textContent = dollars(net / data.units);
+  $('out-roi').textContent = ai > 0 ? (net / ai).toFixed(1) + 'x' : 'n/a';
+  $('out-payback').textContent = payback === null ? 'n/a' : payback.toFixed(1) + (payback.toFixed(1) === '1.0' ? ' month' : ' months');
+  $('out-value').textContent = value === null ? 'n/a' : '$' + (value / 1e6).toFixed(2) + 'M';
+  $('bridge-bars').innerHTML = lifts.map(([label, lift]) => '<div class="bar-line proj"><span>' + escape(label) + '</span><span class="track" role="img" aria-label="' +
+    escape(label) + ' ' + dollars(lift) + '"><span class="fill" style="display:block;width:' + (lift / largest * 100).toFixed(1) + '%"></span></span><b>' + dollars(lift) + '</b></div>').join('');
+}
+$('cap-rate').value = assume.cap_rate * 100;
+$('bridge').addEventListener('input', renderBridge);
+$('bridge-reset').addEventListener('click', () => {
+  for (const driver of assume.drivers) {
+    $('b-' + driver.id + '-base').value = driver.base;
+    $('b-' + driver.id + '-lever').value = +(leverDefault(driver) * 100).toFixed(3);
+  }
+  $('fee-pct').value = assume.management_fee * 100;
+  $('ai-rate').value = assume.ai_cost_per_unit_month;
+  $('cap-rate').value = assume.cap_rate * 100;
+  renderBridge();
+});
+$('assumption-note').textContent = assume.note;
+renderBridge();
+
+// D. Automation build
+const auto = model.automation;
+const slot = item => item.image ? '<img class="shot" src="' + escape(item.image) + '" alt="n8n workflow ' + escape(item.id) + '">' :
+  '<figure class="shot-slot" data-slot="' + escape(item.id) + '">Image slot: n8n screenshot of ' + escape(item.id) + '</figure>';
+const card = (item, built) => '<article class="card' + (built ? '' : ' next') + '"><div class="section-head"><h3>' + escape(item.id + ' ' + item.title) + '</h3></div>' +
+  '<span class="tag ' + (built ? 'hist' : 'gov') + '">' + escape(built ? auto.built_label : auto.next_label) + '</span>' +
+  '<ul class="ready-list ' + (built ? 'tested' : 'pending') + '">' + item.points.map(point => '<li>' + escape(point) + '</li>').join('') + '</ul>' + (built ? slot(item) : '') + '</article>';
+$('auto-built').innerHTML = auto.built.map(item => card(item, true)).join('');
+$('auto-next').innerHTML = auto.next.map(item => card(item, false)).join('');
+$('stack-label').textContent = auto.stack_label;
+$('stack-table').innerHTML = table(['Tool','Planned use'], auto.stack.map(row => [escape(row[0]), escape(row[1])]));
 
 const queue = [
   {id:'DEMO-101',name:'Jordan',topic:'Tour inquiry',channel:'Email',consent:true,intent:'tour',inquiry:'Can I find out how to schedule a tour?'},

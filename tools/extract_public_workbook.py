@@ -4,16 +4,22 @@ Reads the property's yearly workbook and writes a small workbook that holds the
 monthly Occupancy row and the 13 "Box Score Stats" rows (with their totals) and
 nothing else. The property name in the header is replaced by a generic label.
 
+A second, separate report from the property system (data/leasing-2025-system-pull.csv)
+supplies three rows: Submitted Guest Cards and Submitted Applications replace the
+workbook rows of the same name, and Converted To Leases is added. The public file
+then holds 15 rows (occupancy plus 14 box score rows).
+
 The script refuses to write the file if anything other than those 14 rows would
 go out, or if the output contains the property's name, a name from the optional
 --block-file, an email address, a phone number, or a web link. The property name
 is read from the source workbook at run time, so it never appears in this script.
 
 Usage:
-    python tools/extract_public_workbook.py SOURCE.xlsx [--block-file names.txt]
+    python tools/extract_public_workbook.py SOURCE.xlsx [--system-pull pull.csv] [--block-file names.txt]
 """
 
 import argparse
+import csv
 from datetime import datetime
 from math import isfinite
 from pathlib import Path
@@ -32,10 +38,15 @@ BOX_LABELS = [
     "Follow Up Texts", "Submitted Guest Cards", "Submitted Applications", "Walk Ins",
     "Converted To Visits", "Return Visits", "Total Prospects", "Rejected Applications",
 ]
+# Rows that come from the separate property-system report instead of the workbook.
+PULL_LABELS = ["Submitted Guest Cards", "Submitted Applications", "Converted To Leases"]
+PUBLIC_BOX_LABELS = BOX_LABELS + ["Converted To Leases"]
+MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+DEFAULT_PULL = Path(__file__).resolve().parents[1] / "data" / "leasing-2025-system-pull.csv"
 PUBLIC_LABEL = "{units}-Unit Multifamily Community"
 SHEET = "Leasing"
-# Public layout: title B1, header B2, month row 5, occupancy row 6, box score rows 7-19.
-PUBLIC_ROWS = {1, 2, 5, 6, *range(7, 20)}
+# Public layout: title B1, header B2, month row 5, occupancy row 6, box score rows 7-20.
+PUBLIC_ROWS = {1, 2, 5, 6, *range(7, 21)}
 LINK = re.compile(r"https?://|www\.|\.com\b|\.org\b|\.net\b", re.I)
 EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[a-z]{2,}", re.I)
 PHONE = re.compile(r"\(?\b\d{3}\)?[ .-]\d{3}[ .-]\d{4}\b")
@@ -95,6 +106,43 @@ def read_source(path):
     return dict(name=header[1], units=units, year=year, dates=dates, occupancy=occupancy, box=box)
 
 
+def read_pull(path):
+    """Read the property-system report: three rows, 12 whole-number months and a Total each."""
+    with open(path, newline="", encoding="utf-8") as handle:
+        rows = list(csv.reader(handle))
+    if not rows or rows[0] != ["Measure", *MONTH_NAMES, "Total"]:
+        fail("the system-pull file must start with: Measure, Jan..Dec, Total")
+    found = {}
+    for row in rows[1:]:
+        if not row or not any(cell.strip() for cell in row):
+            continue
+        if len(row) != 14 or row[0] not in PULL_LABELS or row[0] in found:
+            fail(f"unexpected or repeated row in the system-pull file: {row[0] if row else ''}")
+        try:
+            numbers = [int(cell) for cell in row[1:]]
+        except ValueError:
+            fail(f"{row[0]}: every value in the system-pull file must be a whole number")
+        if any(n < 0 for n in numbers):
+            fail(f"{row[0]}: values cannot be negative")
+        if sum(numbers[:12]) != numbers[12]:
+            fail(f"{row[0]}: the Total does not equal the sum of the 12 months")
+        found[row[0]] = (numbers[:12], numbers[12])
+    if sorted(found) != sorted(PULL_LABELS):
+        fail("the system-pull file must hold exactly: " + ", ".join(PULL_LABELS))
+    return found
+
+
+def apply_pull(data, pull):
+    box = []
+    for label, counts, total in data["box"]:
+        if label in pull:
+            counts, total = pull[label]
+        box.append((label, counts, total))
+    box.append(("Converted To Leases", *pull["Converted To Leases"]))
+    data["box"] = box
+    return data
+
+
 def build_public(data):
     book = Workbook()
     sheet = book.active
@@ -142,14 +190,16 @@ def main():
     parser.add_argument("workbook", type=Path)
     parser.add_argument("--output", type=Path,
                         default=Path(__file__).resolve().parents[1] / "data" / "leasing-2025-public.xlsx")
+    parser.add_argument("--system-pull", type=Path, default=DEFAULT_PULL,
+                        help="CSV from the property system: guest cards, applications, leases (default: data/ file).")
     parser.add_argument("--block-file", type=Path,
                         help="Text file, one name per line (company, management, lender, people) to refuse.")
     args = parser.parse_args()
-    data = read_source(args.workbook)
+    data = apply_pull(read_source(args.workbook), read_pull(args.system_pull))
     terms = forbidden_terms(data, args.block_file)
     book = build_public(data)
     sheet = book[SHEET]
-    allowed_text = {sheet["B1"].value, sheet["B2"].value, "Measure", "Total", "Occupancy", *BOX_LABELS}
+    allowed_text = {sheet["B1"].value, sheet["B2"].value, "Measure", "Total", "Occupancy", *PUBLIC_BOX_LABELS}
     for row in sheet.iter_rows():
         for cell in row:
             if cell.value is None:
@@ -185,6 +235,7 @@ def main():
         fail("occupancy did not round-trip; the file was deleted")
     print(f"Saved {args.output.resolve()}")
     print(f"{len(data['box']) + 1} rows x 12 months (+ totals), {data['units']} units, {data['year']}")
+    print("Guest cards, applications and leases came from " + args.system_pull.name)
 
 
 if __name__ == "__main__":
