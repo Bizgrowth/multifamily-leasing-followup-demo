@@ -173,10 +173,10 @@ const results = [];
     const bad = [];
     const walk = dir => fs.readdirSync(dir, { withFileTypes: true }).forEach(f => {
       const full = path.join(dir, f.name);
-      if (f.isDirectory()) return walk(full);
+      if (f.isDirectory()) return f.name === '.git' ? null : walk(full);
       const rel = path.relative(releaseDir, full).replace(/\\/g, '/');
       const data = rel.startsWith('demo-data/');
-      if (!(allowed.test(f.name) || (data && /\.xlsx$/i.test(f.name)))) bad.push(rel);
+      if (!(allowed.test(f.name) || rel === 'CNAME' || (data && /\.xlsx$/i.test(f.name)))) bad.push(rel);
     });
     walk(releaseDir);
     const source = fs.existsSync(path.join(releaseDir, 'demo-data', 'SOURCE.md'));
