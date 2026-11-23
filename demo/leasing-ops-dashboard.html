@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Portfolio demo: multifamily leasing operations dashboard with a supervised AI follow-up workflow. Fictional property and synthetic data.">
-<title>Leasing Operations Demo | AI Ops Expert</title>
+<meta name="description" content="Portfolio work: multifamily leasing operations dashboard with a supervised AI follow-up workflow. Measured 2025 leasing records for one property, name removed. The follow-up lab is simulated.">
+<title>Leasing Operations Dashboard | AI Ops Expert</title>
 <style>
 :root{
   color-scheme:dark;
@@ -205,15 +205,14 @@ footer .steps .g{color:var(--orange)}footer .steps .a{color:var(--peri)}footer .
   .event-log li>:nth-child(3),.event-log li>:nth-child(4){grid-column:2}
   .bar-line{grid-template-columns:1fr 54px}.bar-line .track{grid-column:1/-1;grid-row:2}
 }
-footer.method{margin-bottom:64px}
-.build-badge{position:fixed;right:16px;bottom:16px;z-index:50;pointer-events:none;padding:7px 12px;border:1px solid rgba(255,138,66,.55);border-radius:999px;background:rgba(13,14,16,.92);color:#ffc6a3;font-size:12px;letter-spacing:.02em}
+.build-badge{position:sticky;top:0;z-index:50;padding:7px 16px;text-align:center;background:#0d0e10;border-bottom:1px solid rgba(255,138,66,.5);color:#ffc6a3;font-size:12.5px;line-height:1.4;letter-spacing:.02em}
 .draft-edit{width:100%;min-height:150px;box-sizing:border-box;padding:12px;border:1px solid #ff8a42;border-radius:10px;background:#0d0e10;color:#f5f5f2;font:inherit;line-height:1.5}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
+<div class="build-badge" role="note">Real-work build · a real property's 2025 leasing records, name removed · Follow-up lab simulated</div>
 <main>
-<div class="build-badge" role="note">Demo build · fictional property, synthetic data</div>
 <header class="mast">
   <div class="logo" aria-label="AI Ops Expert"><i></i><b>AI Ops</b><span>EXPERT</span></div>
   <div class="motto">Operations first.<br>AI second.</div>
@@ -238,7 +237,7 @@ footer.method{margin-bottom:64px}
 </nav>
 
 <div class="legend" aria-label="How figures are labeled">
-  <span class="tag hist">Historical</span>from the property workbook
+  <span class="tag hist">Measured (2025 records)</span>from the property's 2025 records
   <span class="tag proj">Scenario projection</span>your assumptions
   <span class="tag sim">Simulated</span>fictional events in this session
 </div>
@@ -248,42 +247,35 @@ footer.method{margin-bottom:64px}
   <section id="headline" class="headline-grid" aria-label="Key metrics"></section>
   <div class="grid">
     <section class="panel" aria-labelledby="occupancy-title">
-      <div class="section-head"><h2 id="occupancy-title">Occupancy trend</h2><span class="tag hist">Historical</span></div>
+      <div class="section-head"><h2 id="occupancy-title">Occupancy trend</h2><span class="tag hist">Measured (2025 records)</span></div>
       <div id="occupancy-chart"></div>
     </section>
-    <section class="panel" aria-labelledby="noi-title">
-      <div class="section-head"><h2 id="noi-title">Controllable NOI</h2><span class="tag hist">Historical</span></div>
-      <p class="note">Monthly income less operating expenses.</p>
-      <div id="noi-chart"></div>
+    <section class="panel" aria-labelledby="visits-title">
+      <div class="section-head"><h2 id="visits-title">Visits trend</h2><span class="tag hist">Measured (2025 records)</span></div>
+      <p class="note">Prospects who converted to a visit, counted each month.</p>
+      <div id="visits-chart"></div>
     </section>
   </div>
-  <section class="panel" aria-labelledby="finance-title">
-    <div class="section-head"><h2 id="finance-title">Financial performance</h2><small id="finance-period"></small></div>
-    <p class="note" id="variance-note"></p>
-    <div id="finance-table" class="table-wrap"></div>
-    <p class="note">The workbook uses “Net Operating Income” for a subtotal after non-controllable expenses, which include debt expense and depreciation. This dashboard reports controllable NOI as the operating view.</p>
-  </section>
   <section class="panel review" aria-labelledby="review-title">
     <div class="section-head"><h2 id="review-title">Manager review brief</h2><span class="tag gov">Human review required</span></div>
-    <p class="note">Drafts a short summary from the workbook figures. Nothing is distributed until a manager marks it reviewed.</p>
+    <p class="note">Drafts a short summary from the 2025 occupancy and leasing figures. It reports measured trends only. Nothing is distributed until a manager marks it reviewed.</p>
     <p class="status" id="review-status" aria-live="polite">Ready to draft</p>
     <ul id="brief" hidden></ul>
     <div class="toolbar"><button id="generate" type="button" class="btn-auto">Draft brief</button><button id="approve" type="button" class="btn-gov" hidden>Mark reviewed</button></div>
   </section>
   <details class="panel" id="data-checks"><summary><span>Source and reconciliation <span class="flagged" id="check-count"></span></span></summary>
     <p class="note" id="source"></p>
-    <p class="note">Financial trends and annual comparisons use the Net Income Summary. Monthly values are shown as reported because the file does not mark each month as actual or projected. Original budget figures are annual only. Occupancy is read directly from the property summary.</p>
+    <p class="note">Each box-score Total is compared with the sum of its 12 monthly values. Occupancy is shown as recorded and has no total. All twelve months are measured records, January to December.</p>
     <div class="table-wrap" id="checks-table"></div>
   </details>
-  <details class="panel" id="leasing"><summary>Leasing activity by channel</summary><div class="table-wrap" id="leasing-table"></div><p class="note">Prospect, visit, and application counts are shown as recorded. The workbook has no individual records that link these events.</p></details>
-  <details class="panel" id="accounts"><summary>Selected accounts and capital expenditures</summary><p class="note">Individual workbook rows and subtotals. Check the reconciliation before distributing figures.</p><div class="table-wrap" id="accounts-table"></div></details>
+  <details class="panel" id="leasing"><summary>Leasing activity by channel</summary><div class="table-wrap" id="leasing-table"></div><p class="note">Prospect, visit, and application counts are shown as recorded. The records have no individual-level data that links these events.</p></details>
 </div>
 
 <!-- Box score -->
 <div id="boxscore" role="tabpanel" hidden>
   <section class="panel">
-    <div class="section-head"><h2>Leasing activity trend</h2><span class="tag hist">Historical</span></div>
-    <div class="section-head"><p class="note">FY <span id="box-year"></span> workbook history. Follow-up counts are contact attempts and can include repeat contacts to the same prospect.</p><label class="inline-control">Metric <select id="box-metric"></select></label></div>
+    <div class="section-head"><h2>Leasing activity trend</h2><span class="tag hist">Measured (2025 records)</span></div>
+    <div class="section-head"><p class="note">FY <span id="box-year"></span> measured records. Follow-up counts are contact attempts and can include repeat contacts to the same prospect.</p><label class="inline-control">Metric <select id="box-metric"></select></label></div>
     <div id="box-chart"></div>
     <div id="box-metrics" class="lab-metrics"></div>
     <div class="table-wrap" id="box-table"></div>
@@ -306,7 +298,7 @@ footer.method{margin-bottom:64px}
   </section>
   <section class="panel">
     <div class="section-head"><h2>Follow-up lab outcomes</h2><span class="tag sim">Simulated</span></div>
-    <p class="note">Run the fictional prospects in the Follow-up lab. These counts update as you record contacts, replies, and leasing milestones, kept apart from the historical figures above.</p>
+    <p class="note">Run the fictional prospects in the Follow-up lab. These counts update as you record contacts, replies, and leasing milestones, kept apart from the measured figures above.</p>
     <div id="session-box" class="table-wrap" aria-live="polite"></div>
   </section>
 </div>
@@ -373,49 +365,48 @@ footer.method{margin-bottom:64px}
   </section>
   <div class="two-col">
     <section class="panel">
-      <div class="section-head"><h2>Built and tested in this demo</h2><span class="tag hist">Working</span></div>
+      <div class="section-head"><h2>Built and tested in this build</h2><span class="tag hist">Working</span></div>
       <ul class="ready-list tested">
-        <li><b>Workbook import</b> with cell-level citations and a reconciliation that flags summary and detail rows that disagree.</li>
+        <li><b>Records import</b> with cell-level citations and a reconciliation that checks each box-score Total against the sum of its 12 months.</li>
         <li><b>Reporting controls</b> for period, box-score metric, and scenario assumptions.</li>
         <li><b>Approval gate.</b> Nothing reaches “send” without a reviewer approving the exact draft.</li>
         <li><b>Duplicate-send prevention.</b> Each prospect can be dispatched once per step.</li>
         <li><b>Consent blocking</b> before drafting, and <b>STOP after approval</b> suppressing a draft that was already approved.</li>
         <li><b>Staff routing</b> for screening and policy questions.</li>
-        <li><b>Milestones</b> (tour, application, move-in) updating a simulated box score kept apart from history.</li>
+        <li><b>Milestones</b> (tour, application, move-in) updating a simulated box score kept apart from the measured records.</li>
       </ul>
     </section>
     <section class="panel">
-      <div class="section-head"><h2>What a pilot would add</h2><span class="tag gov">Simulated in this demo</span></div>
+      <div class="section-head"><h2>What a pilot would add</h2><span class="tag gov">Simulated in this build</span></div>
       <ul class="ready-list pending">
-        <li><b>Rent Manager</b> as the source of prospects, availability, tours, and move-ins. The demo reads a synthetic workbook.</li>
-        <li><b>Claude</b> for intent and drafting. The demo uses pre-written drafts.</li>
-        <li><b>Make</b> to route approved messages. The demo routes them in the browser.</li>
-        <li><b>Email and SMS senders</b> with opt-out handling. The demo simulates delivery, replies, and STOP.</li>
+        <li><b>Rent Manager</b> as the source of prospects, availability, tours, and move-ins. This build reads the 2025 records extract.</li>
+        <li><b>Claude</b> for intent and drafting. This build uses pre-written drafts.</li>
+        <li><b>Make</b> to route approved messages. This build routes them in the browser.</li>
+        <li><b>Email and SMS senders</b> with opt-out handling. This build simulates delivery, replies, and STOP.</li>
       </ul>
     </section>
   </div>
 </div>
 
-<footer class="method"><span>Fix the operation. Then automate it.</span><span class="steps"><span class="d">Document</span> → <span class="g">Govern</span> → <span class="a">Automate</span></span></footer>
+<footer class="method"><span>Get the operation right. Then automate it.</span><span class="steps"><span class="d">Document</span> → <span class="g">Govern</span> → <span class="a">Automate</span></span></footer>
 </main>
-<script id="workbook" type="application/json">{"property":"Linden Park","units":268,"year":2025,"file":"linden-park-synthetic-workbook.xlsx","occupancy":[0.912,0.918,0.927,0.931,0.936,0.944,0.941,0.947,0.951,0.949,0.953,0.958],"finance":[{"name":"Income","row":252,"months":[374323.1,375573.94,383088.82,381547.76,384356.24,388134.31,384666.1,387580.02,389988.12,388827.77,390023.88,394513.77],"revised":4622623.83,"budget":4581000,"detailRow":57,"detail":[374323.1,375573.94,383088.82,381547.76,384356.24,388134.31,384666.1,387580.02,389988.12,388827.77,390023.88,394513.77]},{"name":"Operating expenses","row":253,"months":[-147102.7,-148590.58,-145413.37,-144609.23,-146584.82,-143503.36,-134623.89,-143782.51,-138680.16,-142459.49,-151397.64,-155293.5],"revised":-1742041.25,"budget":-1729500,"detailRow":183,"detail":[-147102.7,-148590.58,-145413.37,-144609.23,-146584.82,-143503.36,-147040.16,-143782.51,-138680.16,-142459.49,-151397.64,-155293.5]},{"name":"Controllable NOI","row":254,"months":[227220.4,226983.36,237675.45,236938.53,237771.42,244630.95,250042.21,243797.51,251307.96,246368.28,238626.24,239220.27],"revised":2880582.58,"budget":2851500,"detailRow":185,"detail":[227220.4,226983.36,237675.45,236938.53,237771.42,244630.95,237625.94,243797.51,251307.96,246368.28,238626.24,239220.27]},{"name":"Non-controllable expenses","row":255,"months":[-198540.5,-196073.2,-199900.95,-196073.2,-199900.95,-196073.2,-199900.95,-196073.2,-199900.95,-196073.2,-199900.95,-196073.2],"revised":-2374484.45,"budget":-2368000,"detailRow":201,"detail":[-198540.5,-196073.2,-199900.95,-196073.2,-199900.95,-196073.2,-199900.95,-196073.2,-199900.95,-196073.2,-199900.95,-196073.2]},{"name":"Workbook-labeled NOI","row":256,"months":[28679.9,30910.16,37774.5,40865.33,37870.47,48557.75,50141.26,47724.31,51407.01,50295.08,38725.29,43147.07],"revised":506098.13,"budget":483500,"detailRow":203,"detail":[28679.9,30910.16,37774.5,40865.33,37870.47,48557.75,37724.99,47724.31,51407.01,50295.08,38725.29,43147.07]},{"name":"Non-operating expenses","row":257,"months":[0,0,0,0,0,0,0,0,-4210.88,0,0,0],"revised":-4210.88,"budget":0,"detailRow":242,"detail":[0,0,0,0,0,0,0,0,-4210.88,0,0,0]},{"name":"Net income","row":258,"months":[28679.9,30910.16,37774.5,40865.33,37870.47,48557.75,50141.26,47724.31,47196.13,50295.08,38725.29,43147.07],"revised":501887.25,"budget":483500,"detailRow":244,"detail":[28679.9,30910.16,37774.5,40865.33,37870.47,48557.75,37724.99,47724.31,47196.13,50295.08,38725.29,43147.07]}],"details":[{"name":"Loss to Vacancy","row":13,"months":[-14734.1,-13729.51,-12222.61,-11552.88,-10715.71,-9376.25,-9878.55,-8873.95,-8204.22,-8539.08,-7869.35,-7032.19],"revised":-122728.4,"budget":-112000},{"name":"Total Loss to Concessions","row":20,"months":[-8842.95,-8571.3,-6623.07,-6604.89,-7011.91,-8828.21,-9668.9,-7863.49,-9650.21,-8606.12,-9664.88,-6893.43],"revised":-98829.36,"budget":-88000},{"name":"Total Loss to Collections","row":56,"months":[-1599.8,-2679.42,-1159.02,-75.15,-1396.38,-1545.39,475.51,565.1,-2998.78,-2369.38,-326.68,-549.19],"revised":-13658.58,"budget":-16500},{"name":"Total Vendor Services","row":120,"months":[17799.78,13323.48,17735.59,13591.63,17170.05,13903.91,12507.45,12786.96,13632.79,15375.48,17489.34,15287.24],"revised":180603.7,"budget":171000},{"name":"Total Utility Expense","row":150,"months":[17632.25,17942.59,15330.54,16758.14,16861.9,17018.66,19742.68,17599.69,16178.73,15391.68,16995.74,17423.64],"revised":204876.24,"budget":199500},{"name":"Total Payroll & Labor Expense","row":182,"months":[25530.16,28933.14,25198.49,31085.04,24948.46,28547.07,29968.48,28075.36,25620.78,26063.13,27748.85,39728.65],"revised":341447.61,"budget":348000},{"name":"Total Depreciation & Amortization","row":190,"months":[79880.1,81240.55,81240.55,81240.55,81240.55,81240.55,81240.55,81240.55,81240.55,81240.55,81240.55,81240.55],"revised":973526.15,"budget":972500},{"name":"Total Mortgage & Debt Expense","row":194,"months":[118660.4,114832.65,118660.4,114832.65,118660.4,114832.65,118660.4,114832.65,118660.4,114832.65,118660.4,114832.65],"revised":1400958.3,"budget":1397900},{"name":"Total Capital Expenditures","row":240,"months":[9192.17,9976.54,21122.77,24341.73,23499.57,10987.44,7317.48,20972.79,19913.28,9059.22,6852.43,18789.12],"revised":182024.54,"budget":140000}],"leasing":[{"name":"New Calls","row":267,"months":[34,29,38,41,33,37,30,35,28,31,26,23],"reported":385},{"name":"Follow Up Calls","row":268,"months":[12,9,14,18,15,21,19,22,17,20,16,18],"reported":201},{"name":"New Emails","row":269,"months":[22,19,24,27,25,21,18,20,23,17,14,15],"reported":245},{"name":"Follow Up Emails","row":270,"months":[18,22,26,31,37,42,46,51,55,61,66,72],"reported":527},{"name":"New Texts","row":271,"months":[3,2,4,5,3,4,6,5,4,3,2,3],"reported":44},{"name":"Follow Up Texts","row":272,"months":[312,284,335,361,298,342,377,395,366,404,431,458],"reported":4363},{"name":"Submitted Guest Cards","row":273,"months":[0,0,0,0,0,0,0,0,0,0,0,0],"reported":0},{"name":"Submitted Applications","row":274,"months":[11,9,13,14,12,15,13,16,12,14,11,11],"reported":151},{"name":"Walk Ins","row":275,"months":[26,21,29,33,30,34,27,31,25,24,19,17],"reported":316},{"name":"Converted To Visits","row":276,"months":[21,19,24,27,26,30,29,33,31,34,32,35],"reported":341},{"name":"Return Visits","row":277,"months":[2,1,3,2,4,5,3,4,2,3,2,1],"reported":32},{"name":"Total Prospects","row":278,"months":[79,71,88,96,87,94,85,92,83,86,74,72],"reported":1007},{"name":"Rejected Applications","row":279,"months":[2,1,3,1,2,2,1,3,1,2,1,1],"reported":20}],"note":"Fictional property \u00b7 synthetic data"}</script>
+<script id="workbook" type="application/json">{"property":"324-Unit Multifamily Community","units":324,"year":2025,"file":"leasing-2025-public.xlsx","sheet":"Leasing","occupancy":[0.889,0.941,0.96,0.963,0.963,0.97,0.9855,0.975,0.969,0.982,0.969,0.956],"leasing":[{"name":"New Calls","row":7,"months":[52,37,44,48,26,46,31,40,36,51,41,40],"reported":492},{"name":"Follow Up Calls","row":8,"months":[8,3,4,33,11,20,17,23,36,29,10,34],"reported":228},{"name":"New Emails","row":9,"months":[29,18,26,33,21,18,13,14,27,8,3,19],"reported":229},{"name":"Follow Up Emails","row":10,"months":[21,14,15,35,45,49,53,60,65,80,90,100],"reported":627},{"name":"New Texts","row":11,"months":[2,0,0,6,2,1,3,0,1,1,1,1],"reported":18},{"name":"Follow Up Texts","row":12,"months":[687,509,452,488,250,630,386,336,467,520,764,828],"reported":6317},{"name":"Submitted Guest Cards","row":13,"months":[0,0,0,0,0,0,0,0,0,0,0,0],"reported":0},{"name":"Submitted Applications","row":14,"months":[16,21,19,10,9,14,20,25,14,20,17,10],"reported":195},{"name":"Walk Ins","row":15,"months":[67,27,43,41,36,49,33,42,31,33,18,27],"reported":447},{"name":"Converted To Visits","row":16,"months":[11,7,7,15,25,28,35,40,45,47,40,48],"reported":348},{"name":"Return Visits","row":17,"months":[1,0,0,2,5,17,2,0,7,5,7,2],"reported":48},{"name":"Total Prospects","row":18,"months":[90,100,132,134,120,125,130,145,150,162,141,152],"reported":1581},{"name":"Rejected Applications","row":19,"months":[5,5,4,2,0,0,1,2,0,3,1,0],"reported":23}],"note":"Leasing and occupancy only \u00b7 financials not included"}</script>
 <script>
 'use strict';
 const data = JSON.parse(document.getElementById('workbook').textContent);
 const $ = id => document.getElementById(id);
 const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const columns = 'GHIJKLMNOPQR';
-const money = new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0});
-const exact = new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2});
 const count = new Intl.NumberFormat('en-US');
 const percent = value => (value * 100).toFixed(1) + '%';
-const signed = (value, format = money) => (value > 0 ? '+' : '') + format.format(Math.abs(value) < .005 ? 0 : value);
+// Measured occupancy: one decimal, or two when the record itself has two (for example 98.55%).
+const pct = value => { const p = value * 100; return (Math.abs(p * 10 - Math.round(p * 10)) < 1e-6 ? p.toFixed(1) : p.toFixed(2)) + '%'; };
+const signed = (value, format = count) => (value > 0 ? '+' : '') + format.format(Math.abs(value) < .005 ? 0 : value);
 const sum = values => values.reduce((total, value) => total + value, 0);
-const different = (a,b) => Math.abs(a-b) > .01;
+const leasingRow = name => data.leasing.find(row => row.name === name);
 const escape = value => String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
-const cell = (index,row) => index < 0 ? 'T' + row : columns[index] + row;
-const cite = value => '<small class="sources">Sheet1 ' + escape(value) + '</small>';
-const direction = value => value > .005 ? 'positive' : value < -.005 ? 'negative' : '';
+const cell = (index,row) => columns[index] + row;
+const cite = value => '<small class="sources">' + escape(data.sheet) + ' ' + escape(value) + '</small>';
 function table(headers, rows) {
   return '<table><thead><tr>' + headers.map(item => '<th scope="col">'+escape(item)+'</th>').join('') +
     '</tr></thead><tbody>' + rows.map(row => '<tr><th scope="row">'+row[0]+'</th>'+
@@ -444,59 +435,33 @@ function chart(values, index, format, color, label, minimumPad = 1) {
 }
 
 const checks = [];
-for (const row of data.finance) {
-  const summarySum = sum(row.months), detailSum = sum(row.detail);
-  if (different(summarySum,row.revised)) checks.push([row.name,'G'+row.row+':R'+row.row,'T'+row.row,summarySum,row.revised]);
-  if (different(detailSum,summarySum)) checks.push([row.name,'G'+row.detailRow+':R'+row.detailRow,'G'+row.row+':R'+row.row,detailSum,summarySum]);
-  row.detail.forEach((value,i)=>{
-    if (different(value,row.months[i])) checks.push([months[i]+' '+row.name,cell(i,row.detailRow),cell(i,row.row),value,row.months[i]]);
-  });
-}
-for (const row of data.details) {
-  const total = sum(row.months);
-  if (different(total,row.revised)) checks.push([row.name,'G'+row.row+':R'+row.row,'T'+row.row,total,row.revised]);
-}
 for (const row of data.leasing) {
   const total = sum(row.months);
-  if (total !== row.reported) checks.push([row.name,'G'+row.row+':R'+row.row,'S'+row.row,total,row.reported,'count']);
+  if (total !== row.reported) checks.push([row.name,'G'+row.row+':R'+row.row,'S'+row.row,total,row.reported]);
 }
 
 function render() {
   const index = Number($('period').value);
   const full = index < 0;
   const period = full ? 'FY '+data.year : months[index]+' '+data.year;
-  const [income, expenses, noi] = data.finance;
-  const occupancy = full ? sum(data.occupancy)/data.occupancy.length : data.occupancy[index];
-  const financeVal = item => full ? item.revised : item.months[index];
+  const occupancy = data.occupancy;
+  const prospects = leasingRow('Total Prospects'), visits = leasingRow('Converted To Visits'),
+    applications = leasingRow('Submitted Applications');
   const leasingVal = item => full ? item.reported : item.months[index];
-  const prospects = data.leasing[11];
+  const monthly = item => 'monthly '+count.format(item.months[0])+' in Jan, '+count.format(item.months.at(-1))+' in Dec';
+  const source = item => full ? 'Full year · '+monthly(item) : data.sheet+' '+cell(index,item.row);
   const cards = [
-    ['Controllable NOI',money.format(financeVal(noi)),
-      full ? signed(noi.revised-noi.budget)+' vs original budget' : 'Net Income Summary, cell '+cell(index,noi.row)],
-    ['Occupancy',percent(occupancy),full?'Average of 12 reported rates':'Reported for '+period],
-    ['Total income',money.format(financeVal(income)),full?'Revised full-year total':'Net Income Summary, cell '+cell(index,income.row)],
-    ['Leasing prospects',count.format(leasingVal(prospects)),count.format(leasingVal(data.leasing[7]))+' applications submitted']
+    ['Occupancy',pct(full ? occupancy.at(-1) : occupancy[index]),
+      full ? 'December rate · January was '+pct(occupancy[0]) : 'Measured for '+period+' · '+data.sheet+' '+cell(index,6)],
+    ['Total prospects',count.format(leasingVal(prospects)),source(prospects)],
+    ['Converted to visits',count.format(leasingVal(visits)),source(visits)],
+    ['Submitted applications',count.format(leasingVal(applications)),source(applications)]
   ];
   $('headline').innerHTML = cards.map(([label,number,note])=>'<article class="tile"><span class="label">'+label+'</span><strong>'+number+'</strong><small>'+note+'</small></article>').join('');
-  $('occupancy-chart').innerHTML = chart(data.occupancy,index,percent,'#00a3ff','Occupancy',.003);
-  $('noi-chart').innerHTML = chart(noi.months,index,val=>money.format(val),'#49b9ff','Controllable NOI',1000);
-  $('finance-period').textContent = period;
-  $('variance-note').textContent = full ?
-    'Variance equals revised total minus original budget. Positive values are favorable under the signed summary convention.' :
-    'Monthly budget figures are not in this workbook. Choose the full year to compare against the original budget.';
-  $('finance-table').innerHTML = table(full ? ['Metric','Revised total','Original budget','Variance'] : ['Metric','Reported amount'],
-    data.finance.map(row => {
-      const variance = row.revised-row.budget;
-      const label = escape(row.name)+cite(full ? 'T'+row.row+' / V'+row.row : cell(index,row.row));
-      const values = [label,money.format(financeVal(row))];
-      if (full) values.push(money.format(row.budget),'<span class="'+direction(variance)+'">'+signed(variance)+'</span>');
-      return values;
-  }));
+  $('occupancy-chart').innerHTML = chart(occupancy,index,pct,'#00a3ff','Occupancy',.003);
+  $('visits-chart').innerHTML = chart(visits.months,index,value=>count.format(value),'#49b9ff','Converted to visits',1);
   $('leasing-table').innerHTML = table(['Activity',period],data.leasing.map(row=>[
     escape(row.name)+cite(full?'S'+row.row:cell(index,row.row)),count.format(leasingVal(row))]));
-  $('accounts-table').innerHTML = table(full?['Account','Revised total','Original budget']:['Account',period],
-    data.details.map(row=>full?[escape(row.name)+cite('T'+row.row+' / V'+row.row),money.format(row.revised),money.format(row.budget)]:
-      [escape(row.name)+cite(cell(index,row.row)),money.format(row.months[index])]));
   $('brief').hidden = true;
   $('brief').replaceChildren();
   $('approve').hidden = true;
@@ -506,18 +471,21 @@ function render() {
 
 function draft() {
   const index = Number($('period').value);
-  const [income, expenses, noi] = data.finance;
+  const occupancy = data.occupancy;
+  const prospects = leasingRow('Total Prospects'), visits = leasingRow('Converted To Visits'),
+    applications = leasingRow('Submitted Applications');
   const items = [];
   if (index < 0) {
-    items.push('Controllable NOI finished '+signed(noi.revised-noi.budget)+' versus original budget. Operating expenses contributed '+signed(expenses.revised-expenses.budget)+' and the income variance was '+signed(income.revised-income.budget)+'.'+cite('T252:V254'));
-    const first = data.occupancy[0], last = data.occupancy.at(-1);
-    items.push('Occupancy moved from '+percent(first)+' in January to '+percent(last)+' in December.'+cite('G262:R262'));
+    const peak = Math.max(...occupancy);
+    items.push('Occupancy was '+pct(occupancy[0])+' in January and '+pct(occupancy.at(-1))+' in December. The highest month was '+months[occupancy.indexOf(peak)]+' at '+pct(peak)+'.'+cite('G6:R6'));
+    items.push('The property recorded '+count.format(prospects.reported)+' prospects. '+count.format(visits.reported)+' converted to visits and '+count.format(applications.reported)+' submitted applications.'+cite('S'+prospects.row+' / S'+visits.row+' / S'+applications.row));
+    items.push('Monthly visits were '+count.format(visits.months[0])+' in January and '+count.format(visits.months.at(-1))+' in December.'+cite('G'+visits.row+':R'+visits.row));
   } else {
-    const now = data.occupancy[index];
-    items.push(months[index]+' reported controllable NOI of '+money.format(noi.months[index])+' and occupancy of '+percent(now)+'.'+cite(cell(index,254)+' / '+cell(index,262)));
-    if (index > 0) items.push('Controllable NOI changed '+signed(noi.months[index]-noi.months[index-1])+' versus '+months[index-1]+'.'+cite(cell(index-1,254)+':'+cell(index,254)));
+    items.push(months[index]+' occupancy was '+pct(occupancy[index])+'.'+cite(cell(index,6)));
+    items.push(months[index]+' recorded '+count.format(prospects.months[index])+' prospects, '+count.format(visits.months[index])+' visits and '+count.format(applications.months[index])+' applications.'+cite(cell(index,prospects.row)+' / '+cell(index,visits.row)+' / '+cell(index,applications.row)));
+    if (index > 0) items.push('Versus '+months[index-1]+', prospects changed '+signed(prospects.months[index]-prospects.months[index-1])+' and visits changed '+signed(visits.months[index]-visits.months[index-1])+'.'+cite(cell(index-1,prospects.row)+':'+cell(index,prospects.row)+' / '+cell(index-1,visits.row)+':'+cell(index,visits.row)));
   }
-  if (checks.length) items.push('Review the <a href="#data-checks" id="reconcile-link">source differences</a> before distributing financial figures.');
+  if (checks.length) items.push('Review the <a href="#data-checks" id="reconcile-link">source differences</a> before sharing these figures.');
   $('brief').innerHTML = items.map(item=>'<li>'+item+'</li>').join('');
   $('brief').hidden = false;
   $('approve').hidden = false;
@@ -527,16 +495,14 @@ function draft() {
 }
 
 $('property').textContent = data.property;
-$('facts').innerHTML = ['<span>'+escape(data.units)+' units</span>','<span>Fiscal year '+escape(data.year)+'</span>','<span>Monthly workbook snapshot</span>'].join('');
+$('facts').innerHTML = ['<span>'+escape(data.units)+' units</span>','<span>January to December '+escape(data.year)+'</span>','<span>All 12 months measured</span>'].join('');
 $('data-note').textContent = data.note || 'Imported workbook snapshot';
-document.title = data.property + ' Leasing Operations | AI Ops Expert';
-$('source').textContent = 'Source: '+data.file+', Sheet1. Financial summary G252:V258, occupancy G262:R262, leasing F266:S279.';
+$('source').textContent = 'Source: '+data.file+', sheet '+data.sheet+'. Occupancy G6:R6, box score F5:S19. Leasing and occupancy rows only; no financial data is included.';
 $('period').innerHTML = '<option value="-1">Full year '+data.year+'</option>'+months.map((month,i)=>'<option value="'+i+'">'+month+' '+data.year+'</option>').join('');
-$('check-count').textContent = checks.length ? checks.length+' differences to review' : 'No differences in selected checks';
-$('checks-table').innerHTML = checks.length ? table(['Metric','Source A','Source B','B minus A'],checks.map(([name,a,b,left,right,type])=>{
-  const format = type==='count'?count:exact;
-  return [escape(name),format.format(left)+cite(a),format.format(right)+cite(b),signed(right-left,format)];
-})) : '<p>Selected detail and summary values reconcile.</p>';
+$('check-count').textContent = checks.length ? checks.length+' differences to review' : 'All '+data.leasing.length+' totals match';
+$('checks-table').innerHTML = checks.length ? table(['Metric','12-month sum','Reported Total','Total minus sum'],checks.map(([name,a,b,left,right])=>
+  [escape(name),count.format(left)+cite(a),count.format(right)+cite(b),signed(right-left)])) :
+  '<p>Every box-score Total equals the sum of its 12 monthly values ('+data.leasing.length+' of '+data.leasing.length+' rows).</p>';
 $('period').addEventListener('change',render);
 $('generate').addEventListener('click',draft);
 $('approve').addEventListener('click',()=>{
@@ -574,7 +540,6 @@ tabs.forEach((tab,index)=>{
 const initial = tabs.find(tab => '#'+tab.dataset.view === location.hash) || tabs[0];
 showView(initial);
 
-const leasingRow = name => data.leasing.find(row => row.name === name);
 const combine = (label, names) => ({
   name:label,
   months:months.map((_,i)=>sum(names.map(name=>leasingRow(name).months[i]))),
@@ -743,10 +708,10 @@ $('compose').addEventListener('click',()=>{
     p.stage = 'Staff review';
     addEvent(p,'gov','Intent check routed a screening-policy question to staff.');
   } else {
-    p.draft = (p.channel==='Email'?'Subject: Your apartment tour inquiry\n\nThanks for your interest in '+data.property+'. ':
-      data.property+' Leasing: Following up on your tour inquiry. ')+
+    p.draft = (p.channel==='Email'?'Subject: Your apartment tour inquiry\n\nThanks for your interest in our community. ':
+      'Leasing: Following up on your tour inquiry. ')+
       'Reply with two times that work for you, and our leasing team will confirm a tour.'+
-      (p.channel==='Text'?' Reply STOP to opt out.':'\n\n'+data.property+' Leasing Team')+'\n\nApproved source: '+demoFact;
+      (p.channel==='Text'?' Reply STOP to opt out.':'\n\nThe Leasing Team')+'\n\nApproved source: '+demoFact;
     p.stage = 'Draft ready';
     addEvent(p,'auto','Tour inquiry identified. Draft written from DEMO-SOP-01.');
   }

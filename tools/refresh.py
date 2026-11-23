@@ -1,7 +1,8 @@
-"""Embed a property workbook into the leasing operations demo.
+"""Embed the public leasing workbook into the leasing operations dashboard.
 
-Reads the monthly summary, occupancy, and leasing blocks from a workbook in the
-supported layout and writes a copy of the demo with that data embedded.
+Reads data/leasing-2025-public.xlsx (made by tools/extract_public_workbook.py):
+the monthly Occupancy row and the 13 Box Score Stats rows with their totals.
+Writes the data into the dashboard page.
 """
 
 import argparse
@@ -13,35 +14,30 @@ import re
 
 from openpyxl import load_workbook
 
-
-FINANCIALS = [
-    ("Income", 252, 57),
-    ("Operating expenses", 253, 183),
-    ("Controllable NOI", 254, 185),
-    ("Non-controllable expenses", 255, 201),
-    ("Workbook-labeled NOI", 256, 203),
-    ("Non-operating expenses", 257, 242),
-    ("Net income", 258, 244),
-]
-DETAILS = [
-    ("Loss to Vacancy", 13), ("Total Loss to Concessions", 20),
-    ("Total Loss to Collections", 56), ("Total Vendor Services", 120),
-    ("Total Utility Expense", 150), ("Total Payroll & Labor Expense", 182),
-    ("Total Depreciation & Amortization", 190), ("Total Mortgage & Debt Expense", 194),
-    ("Total Capital Expenditures", 240),
+ROOT = Path(__file__).resolve().parents[1]
+SHEET = "Leasing"
+MONTH_COLUMNS = range(7, 19)   # G..R
+TOTAL_COLUMN = 19              # S
+OCCUPANCY_ROW = 6
+BOX_FIRST_ROW, BOX_LAST_ROW = 7, 19
+BOX_LABELS = [
+    "New Calls", "Follow Up Calls", "New Emails", "Follow Up Emails", "New Texts",
+    "Follow Up Texts", "Submitted Guest Cards", "Submitted Applications", "Walk Ins",
+    "Converted To Visits", "Return Visits", "Total Prospects", "Rejected Applications",
 ]
 
 
 def import_data(path):
     workbook = load_workbook(path, data_only=True, read_only=True)
     try:
-        sheet = workbook["Sheet1"]
-        rows = list(sheet.values)
+        rows = list(workbook[SHEET].values)
     finally:
         workbook.close()
 
     def value(row, col):
-        return rows[row - 1][col - 1]
+        if row <= len(rows) and col <= len(rows[row - 1]):
+            return rows[row - 1][col - 1]
+        return None
 
     def number(row, col):
         result = value(row, col)
@@ -50,58 +46,35 @@ def import_data(path):
         return result
 
     def monthly(row):
-        return [number(row, col) for col in range(7, 19)]
+        return [number(row, col) for col in MONTH_COLUMNS]
 
-    property_name = re.fullmatch(r"Property:\s*(.+?)\s*\(([\d,]+) Units\)", str(value(2, 2)))
-    dates = [value(5, col) for col in range(7, 19)]
-    if not property_name or any(not isinstance(date, datetime) for date in dates):
-        raise ValueError("The property header or reporting dates do not match the expected layout.")
+    header = re.fullmatch(r"Property:\s*(.+?)\s*\(([\d,]+) Units\)", str(value(2, 2)))
+    dates = [value(5, col) for col in MONTH_COLUMNS]
+    if not header or any(not isinstance(date, datetime) for date in dates):
+        raise ValueError("The property header or month headers do not match the expected layout.")
     year = dates[0].year
     if [(date.year, date.month) for date in dates] != [(year, month) for month in range(1, 13)]:
-        raise ValueError("Expected twelve consecutive calendar months in the reporting year.")
-    for col, label in [(20, "REVISED TOTAL"), (22, "ORIGINAL BUDGET")]:
-        if " ".join(str(value(5, col)).split()) != label:
-            raise ValueError(f"Expected the {label} column in the workbook.")
-    expected = ["Income", "Expense", "Controllable NOI", "Non Controllable Expense",
-                "Net Operating Income", "Non Operating Expense", "NET INCOME"]
-    if [value(row, 3) for _, row, _ in FINANCIALS] != expected or value(262, 3) != "Occupancy":
-        raise ValueError("The financial summary or occupancy rows have moved.")
-    occupancy = monthly(262)
+        raise ValueError("Expected twelve consecutive calendar months.")
+    if value(5, TOTAL_COLUMN) != "Total" or value(OCCUPANCY_ROW, 6) != "Occupancy":
+        raise ValueError("The Total column or the Occupancy row has moved.")
+    occupancy = monthly(OCCUPANCY_ROW)
     if any(rate < 0 or rate > 1 for rate in occupancy):
         raise ValueError("Occupancy entries must be percentages between 0% and 100%.")
-
-    finance = []
-    for name, row, detail_row in FINANCIALS:
-        sign = -1 if row in (253, 255, 257) else 1
-        finance.append(dict(name=name, row=row, months=monthly(row), revised=number(row, 20),
-                            budget=number(row, 22), detailRow=detail_row,
-                            detail=[sign * entry for entry in monthly(detail_row)]))
-    details = []
-    for label, row in DETAILS:
-        source = re.sub(r"^\d+\s+", "", str(value(row, 3)).strip())
-        if source != label:
-            raise ValueError(f"Expected {label} at row {row}.")
-        details.append(dict(name=label, row=row, months=monthly(row), revised=number(row, 20),
-                            budget=number(row, 22)))
     leasing = []
-    for row in range(267, 280):
+    for row in range(BOX_FIRST_ROW, BOX_LAST_ROW + 1):
         label = value(row, 6)
-        if not isinstance(label, str) or not label.strip():
-            raise ValueError(f"Missing leasing label at F{row}.")
+        if label != BOX_LABELS[row - BOX_FIRST_ROW]:
+            raise ValueError(f"Expected {BOX_LABELS[row - BOX_FIRST_ROW]} at F{row}.")
         counts = monthly(row)
         if any(count < 0 or int(count) != count for count in counts):
             raise ValueError(f"Invalid leasing counts on row {row}.")
-        leasing.append(dict(name=label, row=row, months=counts, reported=number(row, 19)))
-    if [leasing[i]["name"] for i in (3, 5, 7, 9, 11)] != [
-        "Follow Up Emails", "Follow Up Texts", "Submitted Applications",
-        "Converted To Visits", "Total Prospects"
-    ]:
-        raise ValueError("The dashboard's leasing rows have moved.")
-    units = int(property_name[2].replace(",", ""))
+        leasing.append(dict(name=label, row=row, months=[int(count) for count in counts],
+                            reported=int(number(row, TOTAL_COLUMN))))
+    units = int(header[2].replace(",", ""))
     if units <= 0:
         raise ValueError("The property must have at least one unit.")
-    return dict(property=property_name[1], units=units, year=year,
-                file=path.name, occupancy=occupancy, finance=finance, details=details, leasing=leasing)
+    return dict(property=header[1], units=units, year=year, file=path.name, sheet=SHEET,
+                occupancy=occupancy, leasing=leasing)
 
 
 def main():
@@ -109,9 +82,9 @@ def main():
     parser.add_argument("workbook", type=Path)
     parser.add_argument("--output", type=Path, help="Write a new copy of the dashboard to this path.")
     parser.add_argument("--note", default="Imported workbook snapshot",
-                        help="Data label shown in the demo banner, e.g. 'Synthetic data'.")
+                        help="Data label shown under the title, e.g. 'Leasing and occupancy only'.")
     args = parser.parse_args()
-    dashboard = Path(__file__).resolve().parents[1] / "demo" / "linden-park-leasing-ops-demo.html"
+    dashboard = ROOT / "demo" / "leasing-ops-dashboard.html"
     output = args.output or dashboard
     if output.suffix.lower() != ".html":
         parser.error("--output must be an HTML file.")
@@ -120,7 +93,7 @@ def main():
     encoded = json.dumps(data, separators=(",", ":"), allow_nan=False).replace("<", "\\u003c")
     template = dashboard.read_text(encoding="utf-8")
     updated, count = re.subn(r'(<script id="workbook" type="application/json">).*?(</script>)',
-                            lambda match: match[1] + encoded + match[2], template, flags=re.S)
+                             lambda match: match[1] + encoded + match[2], template, flags=re.S)
     if count != 1:
         raise ValueError("The dashboard must contain one workbook data block.")
     output.write_text(updated, encoding="utf-8")

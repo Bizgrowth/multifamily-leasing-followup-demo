@@ -1,4 +1,4 @@
-// "Done means" browser check for the Upwork portfolio demo (12 pass/fail lines),
+// "Done means" browser check for the Real-work build (12 pass/fail lines),
 // plus the 1600x1200 screenshots for portfolio-handoff/.
 // Usage: node done-check.cjs <demo.html> <output-dir>
 // Requires the `playwright` package and a local Chrome install.
@@ -13,6 +13,10 @@ const releaseDir = path.resolve(path.dirname(demoFile), '..');
 const out = path.resolve(outArg);
 fs.mkdirSync(out, { recursive: true });
 const results = [];
+const html = fs.readFileSync(demoFile, 'utf8');
+const embedded = JSON.parse(/<script id="workbook"[^>]*>(.*?)<\/script>/s.exec(html)[1]);
+const rowOf = name => embedded.leasing.find(r => r.name === name);
+const fmt = n => n.toLocaleString('en-US');
 
 (async () => {
   const browser = await chromium.launch({ channel: 'chrome' });
@@ -33,7 +37,7 @@ const results = [];
     await p.evaluate(() => { document.activeElement && document.activeElement.blur(); window.scrollTo(0, 0); });
     if (el) {
       await p.locator(el).evaluate(node => node.scrollIntoView({ block: 'start' }));
-      await p.evaluate(() => window.scrollBy(0, -20));
+      await p.evaluate(() => window.scrollBy(0, -56));
     }
     await p.screenshot({ path: path.join(out, name) });
   };
@@ -48,14 +52,28 @@ const results = [];
 
   await shot('02.png');
 
-  await check('Dashboard walkthrough runs on the demo data (period, reconciliation, metric, scenario)', async () => {
-    const full = await text('#headline .tile:first-child strong');
+  await check('Dashboard walkthrough runs on the 2025 records (layout, period, reconciliation, metric, scenario, review brief)', async () => {
+    const labels = (await p.locator('#headline .tile .label').allInnerTexts()).join('|');
+    const layout = labels === 'Occupancy|Total prospects|Converted to visits|Submitted applications';
+    const headings = (await p.locator('#overview h2').allInnerTexts()).join('|');
+    const panels = ['Occupancy trend', 'Visits trend', 'Manager review brief'].every(h => headings.includes(h)) &&
+      (await p.locator('#leasing summary').innerText()).includes('Leasing activity by channel');
+    const body = (await text('#overview')).toLowerCase();
+    const gone = !/financial performance|selected accounts|controllable noi/.test(body);
+    const tiles = await p.locator('#headline .tile strong').allInnerTexts();
+    const prospects = fmt(rowOf('Total Prospects').reported);
+    const full = tiles[0];
     await p.selectOption('#period', '6');
-    const jul = await text('#headline .tile:first-child strong');
+    const jul = (await p.locator('#headline .tile strong').allInnerTexts())[0];
     await p.selectOption('#period', '-1');
     await p.click('#data-checks summary');
-    const recon = (await text('#checks-table')).includes('12,416.27');
+    const recon = (await text('#check-count')).includes('All 13 totals match') &&
+      embedded.leasing.every(r => r.months.reduce((a, b) => a + b, 0) === r.reported);
     await p.click('#data-checks summary');
+    await p.click('#generate');
+    const brief = (await text('#brief')).includes('Occupancy was') && await p.locator('#approve').isVisible();
+    await p.click('#approve');
+    const reviewed = (await text('#review-status')).includes('Reviewed in this session');
     await tab('Leasing box score');
     const a = await text('#box-chart .chart-summary');
     await p.selectOption('#box-metric', '3');
@@ -65,7 +83,10 @@ const results = [];
     await p.fill('input[name=automation]', '95');
     const d2 = await text('#pilot-result .big-delta');
     await p.fill('input[name=automation]', '85');
-    return { ok: full !== jul && recon && a !== b && d1 !== d2, detail: 'NOI ' + full + ' -> ' + jul + '; July difference flagged' };
+    const units = await p.locator('input[name=moveouts]').getAttribute('max');
+    const hasProspects = tiles[1] === prospects;
+    return { ok: layout && panels && gone && hasProspects && full !== jul && recon && brief && reviewed && a !== b && d1 !== d2 && units === String(embedded.units),
+      detail: 'occupancy ' + full + ' (Dec) -> ' + jul + ' (Jul); 13 of 13 totals match; review brief needs Mark reviewed; scenario on ' + units + ' units' };
   });
   await shot('03.png', '#boxscore');
 
@@ -100,10 +121,12 @@ const results = [];
   });
   await shot('06.png', '#session-box');
 
-  await check('Historical figures unchanged and labeled apart from simulated ones', async () => {
-    const hist = (await text('#box-table')).includes('4,890');
+  await check('Measured figures unchanged and labeled apart from simulated ones', async () => {
+    const both = fmt(rowOf('Follow Up Emails').reported + rowOf('Follow Up Texts').reported);
+    const hist = (await text('#box-table')).includes(both);
     const tags = await p.locator('.tag.hist').count() > 0 && await p.locator('.tag.sim').count() > 0 && await p.locator('.tag.proj').count() > 0;
-    return hist && tags;
+    const legend = (await p.locator('.legend').first().innerText()).includes('Measured (2025 records)');
+    return { ok: hist && tags && legend, detail: 'email + text follow-ups ' + both + ' for the year; tagged Measured, Scenario projection, Simulated' };
   });
 
   await tab('Follow-up lab');
@@ -119,19 +142,18 @@ const results = [];
     return stop && consent && staff;
   });
 
-  await check('"Demo build" and the data source show on every screen', async () => {
+  await check('"Real-work build" label and the data source show on every screen', async () => {
     const tabs = ['Property overview', 'Leasing box score', 'Follow-up lab', 'How it works'];
     for (const t of tabs) {
       await tab(t);
       await p.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
       const badge = p.locator('.build-badge');
-      if (!(await badge.isVisible()) || !(await badge.innerText()).match(/Demo build.*synthetic data/)) return { ok: false, detail: t };
+      if (!(await badge.isVisible()) || !(await badge.innerText()).match(/Real-work build.*2025 leasing records, name removed.*Follow-up lab simulated/)) return { ok: false, detail: t };
     }
     return { ok: true, detail: 'fixed badge visible on all 4 tabs' };
   });
 
   await check('No contact details, booking links or outside links', async () => {
-    const html = fs.readFileSync(demoFile, 'utf8');
     const email = /[\w.+-]+@[\w-]+\.[a-z]{2,}/i.test(html);
     const phone = /\(?\b\d{3}\)?[ .-]\d{3}[ .-]\d{4}\b/.test(html);
     const links = /href\s*=\s*["'](https?:|mailto:|tel:)|calendly|book a call|hire me/i.test(html);
@@ -168,19 +190,23 @@ const results = [];
     return { ok: over.length === 0, detail: over.join('; ') || 'no sideways scroll on any tab' };
   });
 
-  await check('public-release/ holds only code, demo data, SOURCE.md and images', async () => {
+  await check('public-release/ holds only code, public data, SOURCE.md and images, and no old demo data', async () => {
     const allowed = /\.(html|css|js|cjs|py|md|png|svg)$/i;
     const bad = [];
     const walk = dir => fs.readdirSync(dir, { withFileTypes: true }).forEach(f => {
       const full = path.join(dir, f.name);
       if (f.isDirectory()) return f.name === '.git' ? null : walk(full);
       const rel = path.relative(releaseDir, full).replace(/\\/g, '/');
-      const data = rel.startsWith('demo-data/');
+      const data = rel.startsWith('data/');
       if (!(allowed.test(f.name) || rel === 'CNAME' || (data && /\.xlsx$/i.test(f.name)))) bad.push(rel);
     });
     walk(releaseDir);
-    const source = fs.existsSync(path.join(releaseDir, 'demo-data', 'SOURCE.md'));
-    return { ok: bad.length === 0 && source, detail: bad.join(', ') || 'SOURCE.md present' };
+    const source = fs.existsSync(path.join(releaseDir, 'data', 'SOURCE.md'));
+    const oldData = fs.existsSync(path.join(releaseDir, 'demo-data'));
+    const page = (await p.evaluate(() => document.documentElement.outerHTML)).toLowerCase();
+    const oldWords = ['synthetic', 'fictional property'].filter(w => page.includes(w));
+    return { ok: bad.length === 0 && source && !oldData && oldWords.length === 0,
+      detail: bad.join(', ') || (oldData ? 'demo-data/ still exists' : oldWords.join(', ') || 'SOURCE.md present') };
   });
 
   await check('Opens with no server and no console errors', async () => ({ ok: errors.length === 0, detail: errors.join('; ') || 'file:// in Chrome, 0 errors' }));
@@ -191,7 +217,7 @@ const results = [];
   await fresh.locator('#sample-queue button').nth(0).click();
   await fresh.click('#compose');
   await fresh.locator('#followup .lab-grid').evaluate(n => n.scrollIntoView({ block: 'start' }));
-  await fresh.evaluate(() => window.scrollBy(0, -20));
+  await fresh.evaluate(() => window.scrollBy(0, -56));
   await fresh.screenshot({ path: path.join(out, '04.png') });
 
   await browser.close();
